@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { getWeatherByCity } from "../../server/weatherService";
+import { getWeatherByCity } from "../../server/weatherService.js";
 
 // Vercel ejecuta este archivo como funcion serverless para /api/weather/search.
 export default async function handler(request: Request, response: Response) {
