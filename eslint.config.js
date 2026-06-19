@@ -9,7 +9,7 @@ export default [
   { ignores: ["dist"] },
   ...tseslint.configs.recommended,
   {
-    files: ["server/**/*.ts"],
+    files: ["api/**/*.ts", "server/**/*.ts"],
     languageOptions: {
       globals: globals.node,
     },

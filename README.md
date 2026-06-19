@@ -54,6 +54,16 @@ npm run dev
 
 El frontend consume la API local en `http://127.0.0.1:3001`. Si el backend no esta activo, la interfaz usa datos mock como respaldo visual.
 
+## Despliegue en Vercel
+
+El proyecto esta preparado para desplegarse en Vercel desde GitHub. En produccion, el frontend consume la API serverless del mismo dominio mediante `/api/weather/search` y `/api/weather/current`.
+
+Configuracion recomendada en Vercel:
+
+- Framework Preset: `Vite`
+- Build Command: `npm run build`
+- Output Directory: `dist`
+
 ## Endpoints locales
 
 - `GET /api/health`

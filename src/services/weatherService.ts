@@ -1,7 +1,16 @@
 import { defaultCity, weatherMockByCity } from "../data/weatherMock";
 import type { WeatherDashboardData } from "../types/weather";
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:3001";
+function getApiBaseUrl() {
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+
+  // En Vercel la API vive en el mismo dominio que el frontend publicado.
+  return import.meta.env.PROD ? window.location.origin : "http://127.0.0.1:3001";
+}
+
+const apiBaseUrl = getApiBaseUrl();
 
 // Normaliza el texto para buscar coincidencias dentro del respaldo local.
 function normalizeCityName(city: string) {
