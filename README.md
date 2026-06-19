@@ -2,6 +2,10 @@
 
 Plataforma web de clima en tiempo real enfocada en mostrar las condiciones de la ubicacion del usuario, comparar datos entre fuentes climaticas y visualizar informacion global mediante un mapa interactivo.
 
+## Demo en vivo
+
+[Abrir AppWeb Clima](https://app-web-clima-kappa.vercel.app/)
+
 ## Documentacion inicial
 
 - [01 - PRD](docs/01-prd.md)
