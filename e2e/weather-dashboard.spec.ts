@@ -321,3 +321,25 @@ test("E2E-09 conserva la preferencia de reducir animaciones", async ({ page }) =
   await expect(page.getByRole("checkbox", { name: "Reducir animaciones" })).toBeChecked();
   await expect(page.locator("html")).toHaveAttribute("data-reduce-motion", "true");
 });
+
+test("E2E-12 permite reactivar animaciones aunque el sistema las reduzca", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  const preference = page.getByRole("checkbox", { name: "Reducir animaciones" });
+  await expect(preference).toBeChecked();
+
+  await preference.uncheck();
+
+  await expect(preference).not.toBeChecked();
+  await expect(page.locator("html")).toHaveAttribute("data-reduce-motion", "false");
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        window.localStorage.getItem("appweb-clima:reduce-motion"),
+      ),
+    )
+    .toBe("false");
+});

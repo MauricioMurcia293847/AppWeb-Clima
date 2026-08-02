@@ -132,8 +132,12 @@ function App() {
 
   useEffect(() => {
     document.documentElement.dataset.reduceMotion = String(reduceMotion);
-    saveReduceMotionPreference(reduceMotion);
   }, [reduceMotion]);
+
+  function changeReduceMotion(value: boolean) {
+    setReduceMotion(value);
+    saveReduceMotionPreference(value);
+  }
 
   // No se espera (no await en el llamador): corre en paralelo al fetch de
   // clima, no lo bloquea. Nunca lanza -- aiSummaryService ya maneja fallas.
@@ -295,7 +299,7 @@ function App() {
     clearAppLocalData();
     setFavoriteLocations([]);
     setRecentLocations([]);
-    setReduceMotion(false);
+    setReduceMotion(getReduceMotionPreference());
   }
 
   return (
@@ -474,7 +478,7 @@ function App() {
 
             <LegalFooter
               onClearLocalData={clearLocalData}
-              onReduceMotionChange={setReduceMotion}
+              onReduceMotionChange={changeReduceMotion}
               reduceMotion={reduceMotion}
             />
           </div>

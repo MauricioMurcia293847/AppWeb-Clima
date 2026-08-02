@@ -34,8 +34,6 @@ export function Globe3D({
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [isGlobeReady, setIsGlobeReady] = useState(false);
-  const [systemPrefersReducedMotion, setSystemPrefersReducedMotion] = useState(false);
-  const prefersReducedMotion = reduceMotion || systemPrefersReducedMotion;
   const isIntersectingRef = useRef(true);
   const isPageVisibleRef = useRef(!document.hidden);
   const removeWheelGuardRef = useRef<(() => void) | null>(null);
@@ -51,28 +49,18 @@ export function Globe3D({
     }
   }, []);
 
-  // La preferencia del sistema tambien controla la entrada de Three.js; CSS
-  // no puede detener por si solo una animacion ejecutada dentro del canvas.
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const updatePreference = () => setSystemPrefersReducedMotion(media.matches);
-    updatePreference();
-    media.addEventListener("change", updatePreference);
-    return () => media.removeEventListener("change", updatePreference);
-  }, []);
-
-  // La rotacion es ambiental y lenta. Se desactiva de inmediato cuando la
-  // preferencia manual o la del sistema solicita reducir movimiento.
+  // La rotacion es ambiental y lenta. App normaliza primero la preferencia del
+  // sistema y la eleccion manual para que el interruptor visible sea la verdad.
   useEffect(() => {
     if (!isGlobeReady) return;
 
     const controls = globeRef.current?.controls();
     if (!controls) return;
 
-    controls.autoRotate = !prefersReducedMotion;
+    controls.autoRotate = !reduceMotion;
     controls.autoRotateSpeed = 0.45;
     controls.update();
-  }, [isGlobeReady, prefersReducedMotion]);
+  }, [isGlobeReady, reduceMotion]);
 
   // Three.js deja de dibujar cuando el globo sale del viewport o la pestana se
   // oculta. Esto reduce uso de GPU y bateria sin alterar su estado visual.
@@ -135,9 +123,9 @@ export function Globe3D({
 
     globeRef.current.pointOfView(
       { lat: marker.lat, lng: marker.lng, altitude: 1.6 },
-      prefersReducedMotion ? 0 : CITY_FOCUS_DURATION_MS,
+      reduceMotion ? 0 : CITY_FOCUS_DURATION_MS,
     );
-  }, [isGlobeReady, marker, prefersReducedMotion]);
+  }, [isGlobeReady, marker, reduceMotion]);
 
   const handleGlobeReady = useCallback(() => {
     const globe = globeRef.current;
@@ -186,7 +174,7 @@ export function Globe3D({
 
       {size.width > 0 && size.height > 0 && (
         <Globe
-          animateIn={!prefersReducedMotion}
+          animateIn={!reduceMotion}
           atmosphereAltitude={0.18}
           atmosphereColor="#39c4d6"
           backgroundColor="rgba(0,0,0,0)"
@@ -208,7 +196,7 @@ export function Globe3D({
           ringMaxRadius={3.2}
           ringPropagationSpeed={2}
           ringRepeatPeriod={900}
-          ringsData={!prefersReducedMotion && marker ? [marker] : []}
+          ringsData={!reduceMotion && marker ? [marker] : []}
           showGraticules
           width={size.width}
         />

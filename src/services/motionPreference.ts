@@ -2,7 +2,14 @@ const motionPreferenceKey = "appweb-clima:reduce-motion";
 
 export function getReduceMotionPreference(): boolean {
   try {
-    return window.localStorage.getItem(motionPreferenceKey) === "true";
+    const savedPreference = window.localStorage.getItem(motionPreferenceKey);
+    if (savedPreference === "true") return true;
+    if (savedPreference === "false") return false;
+
+    return (
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
   } catch {
     return false;
   }
@@ -10,11 +17,9 @@ export function getReduceMotionPreference(): boolean {
 
 export function saveReduceMotionPreference(value: boolean) {
   try {
-    if (value) {
-      window.localStorage.setItem(motionPreferenceKey, "true");
-    } else {
-      window.localStorage.removeItem(motionPreferenceKey);
-    }
+    // Guardamos ambos valores para distinguir una eleccion explicita de la
+    // ausencia de preferencia, que debe seguir la configuracion del sistema.
+    window.localStorage.setItem(motionPreferenceKey, String(value));
   } catch {
     // La preferencia sigue activa durante la sesion aunque storage este bloqueado.
   }

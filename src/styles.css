@@ -1906,20 +1906,20 @@ button:active:not(:disabled) {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
+  html:not([data-reduce-motion="false"]) {
     scroll-behavior: auto;
   }
 
-  *,
-  *::before,
-  *::after {
+  html:not([data-reduce-motion="false"]) *,
+  html:not([data-reduce-motion="false"]) *::before,
+  html:not([data-reduce-motion="false"]) *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
 
-  button:hover,
-  button:active {
+  html:not([data-reduce-motion="false"]) button:hover,
+  html:not([data-reduce-motion="false"]) button:active {
     transform: none !important;
   }
 }

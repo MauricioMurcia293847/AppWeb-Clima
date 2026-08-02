@@ -59,7 +59,6 @@ describe("ejecucion optimizada del globo", () => {
   let container: HTMLDivElement;
   let root: Root;
   let intersectionCallback: IntersectionCallback;
-  let reducedMotion = false;
 
   beforeEach(() => {
     runtime.methods.controls.mockReturnValue(runtime.controls);
@@ -72,13 +71,11 @@ describe("ejecucion optimizada del globo", () => {
     runtime.controls.autoRotate = false;
     runtime.controls.autoRotateSpeed = 0;
     runtime.renderer.domElement = document.createElement("canvas");
-    reducedMotion = false;
-
     vi.stubGlobal(
       "matchMedia",
       vi.fn((query: string) => ({
         addEventListener: vi.fn(),
-        matches: query.includes("prefers-reduced-motion") ? reducedMotion : true,
+        matches: query.includes("max-width") || query.includes("pointer"),
         media: query,
         removeEventListener: vi.fn(),
       })),
@@ -168,7 +165,6 @@ describe("ejecucion optimizada del globo", () => {
   });
 
   it("elimina animaciones y escapa el tooltip con movimiento reducido", async () => {
-    reducedMotion = true;
     const marker: GlobeMarker = {
       id: "unsafe-city",
       label: '<img src=x onerror="alert(1)">',
@@ -177,7 +173,13 @@ describe("ejecucion optimizada del globo", () => {
     };
 
     await act(async () => {
-      root.render(<Globe3D marker={marker} onSelectCoordinates={vi.fn()} />);
+      root.render(
+        <Globe3D
+          marker={marker}
+          onSelectCoordinates={vi.fn()}
+          reduceMotion
+        />,
+      );
     });
 
     expect(runtime.methods.pointOfView).toHaveBeenLastCalledWith(

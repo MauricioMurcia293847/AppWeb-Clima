@@ -39,10 +39,7 @@ export function AiSummaryCard({
     const section = sectionRef.current;
     if (!section) return;
 
-    const systemReduceMotion =
-      typeof window.matchMedia === "function" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduceMotion || systemReduceMotion || typeof IntersectionObserver === "undefined") return;
+    if (reduceMotion || typeof IntersectionObserver === "undefined") return;
 
     let cancelled = false;
     let revertAnimations: (() => void) | undefined;
@@ -124,8 +121,7 @@ export function AiSummaryCard({
     setAdviceIndex((current) => (current + 1) % adviceOptions.length);
 
     const section = sectionRef.current;
-    if (reduceMotion || !section || typeof window.matchMedia !== "function") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (reduceMotion || !section) return;
 
     // El gesto se ejecuta despues del render para sincronizar el saludo del
     // robot con la aparicion del nuevo consejo.

@@ -6,7 +6,7 @@ import tseslint from "typescript-eslint";
 
 // ESLint revisa errores comunes de JavaScript, React Hooks y Fast Refresh.
 export default [
-  { ignores: ["dist"] },
+  { ignores: ["dist", "playwright-report", "test-results"] },
   ...tseslint.configs.recommended,
   {
     files: ["api/**/*.ts", "server/**/*.ts"],
