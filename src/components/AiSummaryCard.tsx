@@ -24,8 +24,13 @@ export function AiSummaryCard({
   const hasBackendSummary = Boolean(summary && !summary.degraded);
   const displayedLines = hasBackendSummary ? summary!.summaryLines : localGuidance.summaryLines;
   const friendlyTips = buildFriendlyTips(weather);
+  const backendRecommendations = summary?.recommendations?.length
+    ? summary.recommendations
+    : summary?.recommendation
+      ? [summary.recommendation]
+      : [];
   const adviceOptions = hasBackendSummary
-    ? [summary!.recommendation, ...friendlyTips]
+    ? backendRecommendations
     : friendlyTips;
   const recommendation = adviceOptions[adviceIndex % adviceOptions.length];
 
@@ -218,7 +223,7 @@ export function AiSummaryCard({
         )}
 
         <small className="ai-guide-source">
-          {hasBackendSummary && adviceIndex === 0
+          {hasBackendSummary
             ? "Resumen generado por el asistente del backend."
             : "Consejo alternativo basado en los datos meteorológicos visibles."}
         </small>

@@ -60,6 +60,19 @@ export function Globe3D({
     return () => media.removeEventListener("change", updatePreference);
   }, []);
 
+  // La rotacion es ambiental y lenta. Se desactiva de inmediato cuando la
+  // preferencia manual o la del sistema solicita reducir movimiento.
+  useEffect(() => {
+    if (!isGlobeReady) return;
+
+    const controls = globeRef.current?.controls();
+    if (!controls) return;
+
+    controls.autoRotate = !prefersReducedMotion;
+    controls.autoRotateSpeed = 0.45;
+    controls.update();
+  }, [isGlobeReady, prefersReducedMotion]);
+
   // Three.js deja de dibujar cuando el globo sale del viewport o la pestana se
   // oculta. Esto reduce uso de GPU y bateria sin alterar su estado visual.
   useEffect(() => {

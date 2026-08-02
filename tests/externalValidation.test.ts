@@ -25,7 +25,18 @@ describe("externalValidation", () => {
   it("exige resumen y recomendacion no vacios", () => {
     expect(() =>
       parseWeatherSummaryJson(
-        JSON.stringify({ recommendation: "", summary: ["Soleado"] }),
+        JSON.stringify({ recommendations: [], summary: ["Soleado"] }),
+      ),
+    ).toThrow(/incompleta/i);
+  });
+
+  it("exige tres recomendaciones Gemini diferentes", () => {
+    expect(() =>
+      parseWeatherSummaryJson(
+        JSON.stringify({
+          recommendations: ["Lleva agua.", "Lleva agua.", "Busca sombra."],
+          summary: ["Hace calor."],
+        }),
       ),
     ).toThrow(/incompleta/i);
   });

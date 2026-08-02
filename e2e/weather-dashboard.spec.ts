@@ -64,6 +64,11 @@ const weatherSummary: WeatherSummary = {
   degraded: false,
   generatedAt: "2026-08-01T20:00:00.000Z",
   recommendation: "Lleva agua y proteccion solar.",
+  recommendations: [
+    "Lleva agua y proteccion solar.",
+    "Busca sombra durante las horas de mayor calor.",
+    "Usa ropa ligera para mantenerte fresco.",
+  ],
   summaryLines: ["Tarde despejada y templada.", "La lluvia es poco probable."],
 };
 
@@ -131,6 +136,14 @@ test("E2E-02 busca una ciudad y presenta datos en vivo", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1, name: "Madrid" })).toBeVisible();
   await expect(page.getByText("Clima en tiempo real.", { exact: true })).toBeVisible();
   await expect(page.getByText("Tarde despejada y templada.")).toBeVisible();
+  await expect(page.getByText("Lleva agua y proteccion solar.")).toBeVisible();
+  await page.getByRole("button", { name: "Otro consejo" }).click();
+  await expect(
+    page.getByText("Busca sombra durante las horas de mayor calor."),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Resumen generado por el asistente del backend."),
+  ).toBeVisible();
   await expect(
     page
       .getByRole("region", { name: "Recientes" })

@@ -280,7 +280,11 @@ describe("server routes", () => {
                   parts: [
                     {
                       text: JSON.stringify({
-                        recommendation: "Lleva agua y busca un poco de sombra.",
+                        recommendations: [
+                          "Lleva agua y busca un poco de sombra.",
+                          "Usa protector solar antes de salir.",
+                          "Haz pausas bajo techo durante la tarde.",
+                        ],
                         summary: [
                           "La tarde viene cálida.",
                           "Los modelos están bastante alineados.",
@@ -304,6 +308,11 @@ describe("server routes", () => {
       expect(response.body).toMatchObject({
         degraded: false,
         recommendation: "Lleva agua y busca un poco de sombra.",
+        recommendations: [
+          "Lleva agua y busca un poco de sombra.",
+          "Usa protector solar antes de salir.",
+          "Haz pausas bajo techo durante la tarde.",
+        ],
         summaryLines: [
           "La tarde viene cálida.",
           "Los modelos están bastante alineados.",

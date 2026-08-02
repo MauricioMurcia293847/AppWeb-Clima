@@ -12,6 +12,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const runtime = vi.hoisted(() => ({
   controls: {
+    autoRotate: false,
+    autoRotateSpeed: 0,
     enablePan: true,
     enableZoom: true,
     update: vi.fn(),
@@ -67,6 +69,8 @@ describe("ejecucion optimizada del globo", () => {
     runtime.renderer.setPixelRatio.mockClear();
     runtime.controls.enablePan = true;
     runtime.controls.enableZoom = true;
+    runtime.controls.autoRotate = false;
+    runtime.controls.autoRotateSpeed = 0;
     runtime.renderer.domElement = document.createElement("canvas");
     reducedMotion = false;
 
@@ -134,6 +138,8 @@ describe("ejecucion optimizada del globo", () => {
 
     expect(runtime.controls.enableZoom).toBe(false);
     expect(runtime.controls.enablePan).toBe(false);
+    expect(runtime.controls.autoRotate).toBe(true);
+    expect(runtime.controls.autoRotateSpeed).toBe(0.45);
     expect(runtime.renderer.setPixelRatio).toHaveBeenCalledWith(1);
 
     await act(async () => intersectionCallback([{ isIntersecting: false }]));
@@ -162,6 +168,7 @@ describe("ejecucion optimizada del globo", () => {
     );
     expect(runtime.globeProps.animateIn).toBe(false);
     expect(runtime.globeProps.ringsData).toEqual([]);
+    expect(runtime.controls.autoRotate).toBe(false);
 
     const pointLabel = runtime.globeProps.pointLabel as (point: GlobeMarker) => string;
     expect(pointLabel(marker)).toBe(

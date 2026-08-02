@@ -63,6 +63,7 @@ export type WeatherDashboardData = {
 export type WeatherSummary = {
   summaryLines: string[];
   recommendation: string;
+  recommendations: string[];
   generatedAt: string;
   // true cuando la IA no respondio a tiempo o fallo: el texto es un respaldo
   // generico, no algo generado. El frontend lo muestra distinto (sin alarmar).

@@ -131,6 +131,7 @@ export function parseGeminiText(value: unknown): string {
 
 export function parseWeatherSummaryJson(text: string): {
   recommendation: string;
+  recommendations: string[];
   summaryLines: string[];
 } {
   const value: unknown = JSON.parse(text);
@@ -143,12 +144,25 @@ export function parseWeatherSummaryJson(text: string): {
     .map((line) => line.trim())
     .filter(Boolean)
     .slice(0, 3);
-  const recommendation =
-    typeof value.recommendation === "string" ? value.recommendation.trim() : "";
+  const recommendations = Array.isArray(value.recommendations)
+    ? value.recommendations
+        .filter((line): line is string => typeof line === "string")
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .slice(0, 3)
+    : [];
 
-  if (summaryLines.length === 0 || !recommendation) {
+  if (
+    summaryLines.length === 0 ||
+    recommendations.length !== 3 ||
+    new Set(recommendations).size !== recommendations.length
+  ) {
     throw new Error("La respuesta de IA quedó incompleta.");
   }
 
-  return { recommendation, summaryLines };
+  return {
+    recommendation: recommendations[0],
+    recommendations,
+    summaryLines,
+  };
 }

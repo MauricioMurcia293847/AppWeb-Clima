@@ -8,6 +8,7 @@ function localDegradedFallback(): WeatherSummary {
     degraded: true,
     generatedAt: "",
     recommendation: "",
+    recommendations: [],
     summaryLines: ["Resumen no disponible por ahora."],
   };
 }

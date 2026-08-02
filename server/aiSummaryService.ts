@@ -28,6 +28,7 @@ function degradedSummary(): WeatherSummary {
     degraded: true,
     generatedAt: new Date().toISOString(),
     recommendation: "",
+    recommendations: [],
     summaryLines: ["Resumen no disponible por ahora."],
   };
 }
@@ -49,7 +50,7 @@ function buildUserPrompt(weather: WeatherDashboardData): string {
 
 const systemPrompt = `Eres un asistente meteorológico amigable, cercano y ligeramente bromista que ayuda a alguien que está por salir de casa.
 Responde SOLO con JSON valido, sin texto adicional antes o despues, exactamente con esta forma:
-{"summary": ["linea 1", "linea 2"], "recommendation": "una recomendacion practica y corta"}
+{"summary": ["linea 1", "linea 2"], "recommendations": ["consejo 1", "consejo 2", "consejo 3"]}
 
 Reglas:
 - Máximo 3 líneas en "summary", cada una una oración corta y clara.
@@ -57,7 +58,8 @@ Reglas:
 - Puedes usar expresiones cotidianas en espanol latinoamericano, pero evita modismos dificiles de entender.
 - Si la confianza es "media" o "baja", menciona esa reserva en alguna linea (ej. "los modelos difieren un poco, tomalo con reserva").
 - Si la confianza es "no_disponible", menciona que no se pudo comparar con un segundo modelo.
-- "recommendation" es una sola oracion practica (que llevar, si usar paraguas, si es buen momento para salir) y nunca queda vacia.
+- "recommendations" contiene exactamente 3 consejos practicos, breves y distintos (que llevar, si usar paraguas, si es buen momento para salir).
+- Cada consejo debe poder mostrarse de forma independiente y conservar el tono amigable.
 - No inventes datos que no te dieron.`;
 
 async function callGemini(weather: WeatherDashboardData): Promise<WeatherSummary> {
@@ -116,6 +118,7 @@ async function callGemini(weather: WeatherDashboardData): Promise<WeatherSummary
       degraded: false,
       generatedAt: new Date().toISOString(),
       recommendation: parsed.recommendation,
+      recommendations: parsed.recommendations,
       summaryLines: parsed.summaryLines,
     };
   } catch {
