@@ -15,7 +15,7 @@
 - Una ciudad puede usar respaldo local ante red o error `5xx`.
 - Coordenadas arbitrarias no usan mock porque sería engañoso.
 - `400` y `429` conservan el dato anterior y muestran un mensaje específico.
-- Sin Anthropic, el robot ofrece una recomendación local identificada.
+- Sin Gemini, el robot ofrece una recomendación local identificada.
 - Sin WebGL, el globo se sustituye por una vista estática.
 
 ## Privacidad

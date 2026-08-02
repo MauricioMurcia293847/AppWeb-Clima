@@ -196,8 +196,8 @@ describe("server routes", () => {
       expect(response.status).toBe(400);
     });
 
-    it("responde degraded:true sin ANTHROPIC_API_KEY -- no rompe el resto de la app", async () => {
-      vi.stubEnv("ANTHROPIC_API_KEY", "");
+    it("responde degraded:true sin GEMINI_API_KEY -- no rompe el resto de la app", async () => {
+      vi.stubEnv("GEMINI_API_KEY", "");
       vi.spyOn(globalThis, "fetch").mockImplementation(async (input) => {
         const url = String(input);
 
@@ -223,8 +223,8 @@ describe("server routes", () => {
       ]);
     });
 
-    it("degrada una respuesta Anthropic con forma invalida", async () => {
-      vi.stubEnv("ANTHROPIC_API_KEY", "test-key");
+    it("degrada una respuesta Gemini con forma invalida", async () => {
+      vi.stubEnv("GEMINI_API_KEY", "test-key");
       vi.spyOn(globalThis, "fetch").mockImplementation(async (input) => {
         const url = String(input);
 
@@ -235,22 +235,22 @@ describe("server routes", () => {
           return new Response(JSON.stringify(forecastFixture(21)), { status: 200 });
         }
 
-        return new Response(JSON.stringify({ content: [{ unexpected: true }] }), {
+        return new Response(JSON.stringify({ candidates: [{ unexpected: true }] }), {
           status: 200,
         });
       });
 
       const response = await request(app).get(
-        "/api/weather/summary?city=AnthropicInvalido",
+        "/api/weather/summary?city=GeminiInvalido",
       );
 
       expect(response.status).toBe(200);
       expect(response.body.degraded).toBe(true);
     });
 
-    it("entrega un resumen real cuando Anthropic responde con el contrato esperado", async () => {
-      vi.stubEnv("ANTHROPIC_API_KEY", "test-key");
-      vi.spyOn(globalThis, "fetch").mockImplementation(async (input) => {
+    it("entrega un resumen real cuando Gemini responde con el contrato esperado", async () => {
+      vi.stubEnv("GEMINI_API_KEY", "test-key");
+      vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
         const url = String(input);
 
         if (url.includes("geocoding-api.open-meteo.com")) {
@@ -260,18 +260,35 @@ describe("server routes", () => {
           return new Response(JSON.stringify(forecastFixture(22)), { status: 200 });
         }
 
+        expect(url).toContain(
+          "generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent",
+        );
+        expect(new Headers(init?.headers).get("x-goog-api-key")).toBe("test-key");
+        expect(JSON.parse(String(init?.body))).toMatchObject({
+          generationConfig: {
+            maxOutputTokens: 512,
+            responseMimeType: "application/json",
+            thinkingConfig: { thinkingLevel: "minimal" },
+          },
+        });
+
         return new Response(
           JSON.stringify({
-            content: [
+            candidates: [
               {
-                text: JSON.stringify({
-                  recommendation: "Lleva agua y busca un poco de sombra.",
-                  summary: [
-                    "La tarde viene cálida.",
-                    "Los modelos están bastante alineados.",
+                content: {
+                  parts: [
+                    {
+                      text: JSON.stringify({
+                        recommendation: "Lleva agua y busca un poco de sombra.",
+                        summary: [
+                          "La tarde viene cálida.",
+                          "Los modelos están bastante alineados.",
+                        ],
+                      }),
+                    },
                   ],
-                }),
-                type: "text",
+                },
               },
             ],
           }),

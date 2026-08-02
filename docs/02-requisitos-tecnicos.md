@@ -8,7 +8,7 @@
 - Anime.js diferido para el asistente.
 - Express 5 en local y Vercel Functions en producción.
 - Open-Meteo para geocoding, forecast y modelos Best Match/GFS.
-- Anthropic Messages API como resumen opcional.
+- Gemini GenerateContent API como resumen opcional.
 - Workbox mediante Vite PWA.
 - Vitest, Supertest, Playwright, axe-core y ESLint.
 

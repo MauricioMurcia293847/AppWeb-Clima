@@ -1,18 +1,18 @@
 import type { WeatherDashboardData, WeatherSummary } from "../src/types/weather.js";
 import {
   aiSummaryMaxTokens,
-  aiSummaryModel,
   aiSummaryTimeoutMs,
   cacheDurationMs,
+  geminiModel,
 } from "./config.js";
 import {
-  parseAnthropicText,
+  parseGeminiText,
   parseWeatherSummaryJson,
 } from "./externalValidation.js";
 import { observeDependency } from "./observability.js";
 import { getWeatherByCity, getWeatherByCoordinates } from "./weatherService.js";
 
-const anthropicUrl = "https://api.anthropic.com/v1/messages";
+const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(geminiModel)}:generateContent`;
 
 type CacheEntry = {
   expiresAt: number;
@@ -60,8 +60,8 @@ Reglas:
 - "recommendation" es una sola oracion practica (que llevar, si usar paraguas, si es buen momento para salir) y nunca queda vacia.
 - No inventes datos que no te dieron.`;
 
-async function callAnthropic(weather: WeatherDashboardData): Promise<WeatherSummary> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+async function callGemini(weather: WeatherDashboardData): Promise<WeatherSummary> {
+  const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
     // Sin key configurada (ej. desarrollo local sin .env): no intentamos la
@@ -76,17 +76,28 @@ async function callAnthropic(weather: WeatherDashboardData): Promise<WeatherSumm
   let status: number | undefined;
 
   try {
-    const response = await fetch(anthropicUrl, {
+    const response = await fetch(geminiUrl, {
       body: JSON.stringify({
-        max_tokens: aiSummaryMaxTokens,
-        messages: [{ content: buildUserPrompt(weather), role: "user" }],
-        model: aiSummaryModel,
-        system: systemPrompt,
+        contents: [
+          {
+            parts: [{ text: buildUserPrompt(weather) }],
+            role: "user",
+          },
+        ],
+        generationConfig: {
+          maxOutputTokens: aiSummaryMaxTokens,
+          responseMimeType: "application/json",
+          thinkingConfig: {
+            thinkingLevel: "minimal",
+          },
+        },
+        systemInstruction: {
+          parts: [{ text: systemPrompt }],
+        },
       }),
       headers: {
-        "anthropic-version": "2023-06-01",
         "content-type": "application/json",
-        "x-api-key": apiKey,
+        "x-goog-api-key": apiKey,
       },
       method: "POST",
       signal: controller.signal,
@@ -94,12 +105,12 @@ async function callAnthropic(weather: WeatherDashboardData): Promise<WeatherSumm
     status = response.status;
 
     if (!response.ok) {
-      throw new Error(`Anthropic respondio con estado ${response.status}.`);
+      throw new Error(`Gemini respondio con estado ${response.status}.`);
     }
 
     const payload: unknown = await response.json();
-    const parsed = parseWeatherSummaryJson(parseAnthropicText(payload));
-    observeDependency("anthropic", "messages", startedAt, "success", status);
+    const parsed = parseWeatherSummaryJson(parseGeminiText(payload));
+    observeDependency("gemini", "generateContent", startedAt, "success", status);
 
     return {
       degraded: false,
@@ -108,7 +119,7 @@ async function callAnthropic(weather: WeatherDashboardData): Promise<WeatherSumm
       summaryLines: parsed.summaryLines,
     };
   } catch {
-    observeDependency("anthropic", "messages", startedAt, "error", status);
+    observeDependency("gemini", "generateContent", startedAt, "error", status);
     // Timeout, red caida, JSON invalido -- lo que sea, nunca tumbamos el
     // resto de la UI por esto (ADR-002).
     return degradedSummary();
@@ -127,7 +138,7 @@ async function getSummary(
     return cached.value;
   }
 
-  const summary = await callAnthropic(weather);
+  const summary = await callGemini(weather);
 
   // Solo cacheamos resultados reales -- una falla temporal no deberia
   // condenar la respuesta a "no disponible" por los 10 minutos completos.

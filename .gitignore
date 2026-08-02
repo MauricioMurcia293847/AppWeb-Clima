@@ -23,3 +23,6 @@ pnpm-debug.log*
 playwright-report/
 test-results/
 blob-report/
+
+# Vinculo local con el proyecto de Vercel.
+.vercel/

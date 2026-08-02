@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  parseAnthropicText,
+  parseGeminiText,
   parseOpenMeteoForecast,
   parseWeatherSummaryJson,
 } from "../server/externalValidation";
@@ -12,9 +12,13 @@ describe("externalValidation", () => {
     );
   });
 
-  it("extrae texto de una envoltura Anthropic valida", () => {
+  it("extrae texto de una envoltura Gemini valida", () => {
     expect(
-      parseAnthropicText({ content: [{ text: '{"summary":[]}' }] }),
+      parseGeminiText({
+        candidates: [
+          { content: { parts: [{ text: '{"summary":[]}' }] } },
+        ],
+      }),
     ).toBe('{"summary":[]}');
   });
 

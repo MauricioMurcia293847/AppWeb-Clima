@@ -4,7 +4,7 @@
 [![Demo](https://img.shields.io/badge/demo-Vercel-39c4d6)](https://app-web-clima-kappa.vercel.app/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-68e4a4.svg)](LICENSE)
 
-Dashboard meteorológico visual, accesible y responsive. Permite consultar ciudades, coordenadas o la ubicación del dispositivo; explora el planeta con un globo 3D, compara dos modelos de Open-Meteo y ofrece recomendaciones mediante Anthropic o una guía local degradable.
+Dashboard meteorológico visual, accesible y responsive. Permite consultar ciudades, coordenadas o la ubicación del dispositivo; explora el planeta con un globo 3D, compara dos modelos de Open-Meteo y ofrece recomendaciones mediante Gemini o una guía local degradable.
 
 **Demo:** [app-web-clima-kappa.vercel.app](https://app-web-clima-kappa.vercel.app/)
 
@@ -13,7 +13,7 @@ Dashboard meteorológico visual, accesible y responsive. Permite consultar ciuda
 - Clima actual y pronóstico por ciudad, coordenadas o geolocalización.
 - Globo 3D interactivo con fallback estático cuando WebGL no está disponible.
 - Comparación honesta entre Open-Meteo Best Match y Open-Meteo GFS.
-- Asistente meteorológico animado con Anthropic opcional y respaldo determinista.
+- Asistente meteorológico animado con Gemini opcional y respaldo determinista.
 - Estados diferenciados para datos en vivo, ejemplo, respaldo, rate limit y error.
 - Favoritos, búsquedas recientes y preferencia de movimiento en `localStorage`.
 - Borrado selectivo y confirmado de los datos locales de la aplicación.
@@ -30,7 +30,11 @@ Dashboard meteorológico visual, accesible y responsive. Permite consultar ciuda
 
 ### Móvil
 
-<img src="docs/screenshots/appweb-clima-mobile.png" alt="Dashboard de AppWeb Clima en un dispositivo móvil con el globo 3D visible" width="390">
+<p align="center">
+  <img src="docs/screenshots/appweb-clima-mobile.png" alt="Clima actual y globo 3D de AppWeb Clima en móvil" width="31%">
+  <img src="docs/screenshots/appweb-clima-mobile-forecast.png" alt="Métricas y pronósticos de AppWeb Clima en móvil" width="31%">
+  <img src="docs/screenshots/appweb-clima-mobile-assistant.png" alt="Comparación y asistente meteorológico de AppWeb Clima en móvil" width="31%">
+</p>
 
 Las capturas se generan desde la aplicación real con:
 
@@ -54,7 +58,7 @@ flowchart TD
     Globe --> API
     API --> Weather["Open-Meteo Best Match + GFS"]
     Weather --> Dashboard["Clima, métricas y pronósticos"]
-    Dashboard --> AI{"Anthropic configurado"}
+    Dashboard --> AI{"Gemini configurado"}
     AI -->|Sí| Summary["Resumen generado"]
     AI -->|No o falla| Local["Consejo local transparente"]
     Dashboard --> Saved["Favoritos y recientes locales"]
@@ -69,7 +73,7 @@ flowchart LR
     Browser --> WebGL["React Globe GL / Three.js"]
     API --> Policy["Validación, rate limit, headers y logs"]
     Policy --> Meteo["Open-Meteo"]
-    Policy -. opcional .-> Claude["Anthropic Messages API"]
+    Policy -. opcional .-> Gemini["Gemini GenerateContent API"]
     GitHub["GitHub + Actions"] --> Vercel["Vercel CDN + Functions"]
     Vercel --> Browser
     Vercel --> API
@@ -89,7 +93,7 @@ En desarrollo, Express sirve la API en `127.0.0.1:3001`. En producción, Vercel 
 | API local | Node.js + Express 5 | Desarrollo y contratos HTTP |
 | API producción | Vercel Functions | Endpoints serverless del mismo dominio |
 | Clima | Open-Meteo | Geocoding, forecast y comparación de modelos |
-| IA opcional | Anthropic Messages API | Resumen meteorológico estructurado |
+| IA opcional | Gemini GenerateContent API | Resumen meteorológico estructurado |
 | PWA | Vite PWA + Workbox | Instalación y shell offline |
 | Calidad | ESLint, Vitest, Supertest, Playwright y axe-core | Validación automática |
 | CI/CD | GitHub Actions + Vercel | Gates y despliegue |
@@ -123,7 +127,7 @@ AppWeb Clima/
 - npm 10 o compatible.
 - Git.
 - Navegadores Playwright para ejecutar E2E.
-- Clave de Anthropic únicamente si se desea probar IA real.
+- Clave de Gemini únicamente si se desea probar IA real.
 
 ## Setup local
 
@@ -171,12 +175,12 @@ Abre `http://127.0.0.1:5173`. La API local queda en `http://127.0.0.1:3001`.
 
 | Variable | Requerida | Ámbito | Descripción |
 |---|---:|---|---|
-| `ANTHROPIC_API_KEY` | No | Backend | Habilita resúmenes reales. Puede generar costos en Anthropic. |
-| `AI_SUMMARY_MODEL` | No | Backend | Modelo Anthropic; por defecto `claude-haiku-4-5-20251001`. |
+| `GEMINI_API_KEY` | No | Backend | Habilita resúmenes reales mediante Gemini. |
+| `GEMINI_MODEL` | No | Backend | Modelo Gemini; por defecto `gemini-3.5-flash`. |
 | `PORT` | No | Backend local | Puerto de Express; por defecto `3001`. |
 | `VITE_API_BASE_URL` | No | Frontend local | Sobrescribe la URL de la API. En Vercel se usa el mismo origen. |
 
-En Vercel, agrega `ANTHROPIC_API_KEY` y, opcionalmente, `AI_SUMMARY_MODEL` desde **Project Settings > Environment Variables**. Después realiza un redeploy. Puedes confirmar la configuración sin exponer la clave consultando `/api/health`: `capabilities.aiSummary` debe ser `true`.
+En Vercel, agrega `GEMINI_API_KEY` y, opcionalmente, `GEMINI_MODEL` desde **Project Settings > Environment Variables**. Después realiza un redeploy. Puedes confirmar la configuración sin exponer la clave consultando `/api/health`: `capabilities.aiSummary` debe ser `true`.
 
 ## Modelo de base de datos
 
@@ -274,7 +278,8 @@ Los nuevos pushes al branch conectado generan despliegues automáticos.
 - Los logs JSON contienen ruta normalizada, estado, duración, dependencia y `requestId`.
 - Nunca se registran ciudad, coordenadas, IP, prompts ni secretos.
 - La geolocalización requiere permiso y no se persiste.
-- Open-Meteo y Anthropic reciben únicamente los datos necesarios para responder.
+- Open-Meteo y Gemini reciben únicamente los datos necesarios para responder.
+- En el nivel gratuito de Gemini, Google puede usar las solicitudes para mejorar sus productos; evita consultar ubicaciones que consideres sensibles.
 
 AppWeb Clima ofrece información orientativa. Para alertas y condiciones severas, consulta autoridades meteorológicas y de protección civil. El asistente no sustituye avisos oficiales ni asesoría profesional.
 

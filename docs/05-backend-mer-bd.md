@@ -4,7 +4,7 @@
 
 AppWeb Clima no usa base de datos, usuarios ni autenticación. El backend es un
 servicio sin persistencia permanente que valida solicitudes, consulta
-Open-Meteo, compara modelos y genera opcionalmente un resumen con Anthropic.
+Open-Meteo, compara modelos y genera opcionalmente un resumen con Gemini.
 
 ## Componentes
 

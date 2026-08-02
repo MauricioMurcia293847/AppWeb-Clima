@@ -103,17 +103,30 @@ export function parseOpenMeteoForecast(
   return value as unknown as OpenMeteoForecastResponse;
 }
 
-export function parseAnthropicText(value: unknown): string {
-  if (!isRecord(value) || !Array.isArray(value.content)) {
-    throw new Error("Anthropic devolvió una respuesta con formato inválido.");
+export function parseGeminiText(value: unknown): string {
+  if (!isRecord(value) || !Array.isArray(value.candidates)) {
+    throw new Error("Gemini devolvió una respuesta con formato inválido.");
   }
 
-  const firstContent = value.content[0];
-  if (!isRecord(firstContent) || typeof firstContent.text !== "string") {
-    throw new Error("Anthropic no devolvió contenido de texto.");
+  const firstCandidate = value.candidates[0];
+  if (!isRecord(firstCandidate) || !isRecord(firstCandidate.content)) {
+    throw new Error("Gemini no devolvió un candidato válido.");
   }
 
-  return firstContent.text;
+  const { parts } = firstCandidate.content;
+  if (!Array.isArray(parts)) {
+    throw new Error("Gemini no devolvió contenido de texto.");
+  }
+
+  const textPart = parts.find(
+    (part): part is Record<string, unknown> =>
+      isRecord(part) && typeof part.text === "string",
+  );
+  if (!textPart || typeof textPart.text !== "string") {
+    throw new Error("Gemini no devolvió contenido de texto.");
+  }
+
+  return textPart.text;
 }
 
 export function parseWeatherSummaryJson(text: string): {

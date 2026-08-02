@@ -16,7 +16,7 @@ type RequestEvent = {
 };
 
 type DependencyEvent = {
-  dependency: "anthropic" | "open_meteo";
+  dependency: "gemini" | "open_meteo";
   durationMs: number;
   event: "dependency_request_completed";
   operation: string;
