@@ -25,7 +25,12 @@ async function waitForServer() {
   throw new Error("Vite no estuvo disponible a tiempo para crear las capturas.");
 }
 
-async function capture(browser, name, viewport) {
+async function capture(
+  browser,
+  name,
+  viewport,
+  { fullPage = true, type = "webp" } = {},
+) {
   const context = await browser.newContext({
     deviceScaleFactor: 1,
     reducedMotion: "reduce",
@@ -38,10 +43,23 @@ async function capture(browser, name, viewport) {
   });
   await page.goto(baseUrl, { waitUntil: "networkidle" });
   await page.locator(".hero-explore").waitFor();
+
+  // El globo se carga cuando el navegador queda libre. Esperar al canvas y
+  // al retiro del esqueleto evita documentar su estado transitorio.
+  await page.locator(".globe-shell canvas").waitFor({
+    state: "visible",
+    timeout: 20_000,
+  });
+  await page.locator(".globe-skeleton").waitFor({
+    state: "detached",
+    timeout: 20_000,
+  });
+  await page.waitForTimeout(500);
+
   await page.screenshot({
-    fullPage: true,
-    path: path.join(outputDirectory, `${name}.webp`),
-    type: "webp",
+    fullPage,
+    path: path.join(outputDirectory, `${name}.${type}`),
+    type,
   });
   await context.close();
 }
@@ -60,7 +78,12 @@ try {
   await waitForServer();
   browser = await chromium.launch();
   await capture(browser, "appweb-clima-desktop", { height: 960, width: 1440 });
-  await capture(browser, "appweb-clima-mobile", { height: 844, width: 390 });
+  await capture(
+    browser,
+    "appweb-clima-mobile",
+    { height: 844, width: 390 },
+    { fullPage: false, type: "png" },
+  );
 } finally {
   await browser?.close();
   vite.kill();

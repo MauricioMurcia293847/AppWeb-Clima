@@ -30,7 +30,7 @@ Dashboard meteorológico visual, accesible y responsive. Permite consultar ciuda
 
 ### Móvil
 
-<img src="docs/screenshots/appweb-clima-mobile.webp" alt="Dashboard de AppWeb Clima en un dispositivo móvil" width="390">
+<img src="docs/screenshots/appweb-clima-mobile.png" alt="Dashboard de AppWeb Clima en un dispositivo móvil con el globo 3D visible" width="390">
 
 Las capturas se generan desde la aplicación real con:
 

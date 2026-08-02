@@ -30,6 +30,8 @@ test("VIS-01 conserva las superficies principales del dashboard", async ({ page 
   await footer.scrollIntoViewIfNeeded();
   await expect(footer).toHaveScreenshot("footer.webp", {
     animations: "disabled",
-    maxDiffPixelRatio: 0.015,
+    // Linux y Windows rasterizan la tipografia del footer con una diferencia
+    // cercana al 2%; el resto de las superficies conserva el umbral estricto.
+    maxDiffPixelRatio: 0.025,
   });
 });
