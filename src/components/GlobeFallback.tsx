@@ -1,11 +1,10 @@
 type GlobeFallbackProps = {
-  reason?: "loading" | "unsupported" | "error" | "reduced-data";
+  reason?: "loading" | "unsupported" | "error";
 };
 
 const fallbackCopy = {
   error: "El globo interactivo no pudo iniciarse. Puedes buscar cualquier ciudad abajo.",
   loading: "Preparando el explorador mundial.",
-  "reduced-data": "El ahorro de datos muestra una vista estática del mundo.",
   unsupported: "Tu dispositivo muestra una vista estática del mundo. Puedes buscar cualquier ciudad abajo.",
 };
 

@@ -16,13 +16,6 @@ const Globe3D = lazy(() =>
   import("./Globe3D").then((module) => ({ default: module.Globe3D })),
 );
 
-type NavigatorWithConnection = Navigator & {
-  connection?: {
-    effectiveType?: string;
-    saveData?: boolean;
-  };
-};
-
 type WindowWithIdleCallback = Window & {
   cancelIdleCallback?: (id: number) => void;
   requestIdleCallback?: (
@@ -34,19 +27,11 @@ type WindowWithIdleCallback = Window & {
 export function GlobeExperience(props: GlobeExperienceProps) {
   const [webGLSupported] = useState(supportsWebGL);
   const [shouldLoad3D, setShouldLoad3D] = useState(false);
-  const [prefersStaticGlobe] = useState(() => {
-    const connection = (navigator as NavigatorWithConnection).connection;
-    return Boolean(
-      connection?.saveData ||
-        connection?.effectiveType === "slow-2g" ||
-        connection?.effectiveType === "2g",
-    );
-  });
 
   // El dashboard y su fallback aparecen primero. Three.js se descarga cuando
   // el hilo principal queda libre, evitando competir con el contenido inicial.
   useEffect(() => {
-    if (!webGLSupported || prefersStaticGlobe) return;
+    if (!webGLSupported) return;
 
     const idleWindow = window as WindowWithIdleCallback;
     let idleId: number | undefined;
@@ -64,10 +49,9 @@ export function GlobeExperience(props: GlobeExperienceProps) {
       window.clearTimeout(delayId);
       if (idleId !== undefined) idleWindow.cancelIdleCallback?.(idleId);
     };
-  }, [prefersStaticGlobe, webGLSupported]);
+  }, [webGLSupported]);
 
   if (!webGLSupported) return <GlobeFallback reason="unsupported" />;
-  if (prefersStaticGlobe) return <GlobeFallback reason="reduced-data" />;
   if (!shouldLoad3D) return <GlobeFallback reason="loading" />;
 
   return (

@@ -23,6 +23,7 @@ type Globe3DProps = {
 // Viene de three-globe (MIT), version oscura porque asi lo definio 03-diseno.md
 // para la seccion hero de fondo oscuro.
 const GLOBE_TEXTURE_URL = "/globe/earth-dark.jpg";
+const CITY_FOCUS_DURATION_MS = 2400;
 
 export function Globe3D({
   marker,
@@ -134,7 +135,7 @@ export function Globe3D({
 
     globeRef.current.pointOfView(
       { lat: marker.lat, lng: marker.lng, altitude: 1.6 },
-      prefersReducedMotion ? 0 : 1000,
+      prefersReducedMotion ? 0 : CITY_FOCUS_DURATION_MS,
     );
   }, [isGlobeReady, marker, prefersReducedMotion]);
 

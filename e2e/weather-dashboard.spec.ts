@@ -142,7 +142,7 @@ test("E2E-02 busca una ciudad y presenta datos en vivo", async ({ page }) => {
     page.getByText("Busca sombra durante las horas de mayor calor."),
   ).toBeVisible();
   await expect(
-    page.getByText("Resumen generado por el asistente del backend."),
+    page.getByText("Consejos generados por Gemini con el clima actual."),
   ).toBeVisible();
   await expect(
     page

@@ -149,6 +149,24 @@ describe("ejecucion optimizada del globo", () => {
     expect(runtime.methods.resumeAnimation).toHaveBeenCalled();
   });
 
+  it("viaja lentamente hacia una nueva ciudad", async () => {
+    const marker: GlobeMarker = {
+      id: "madrid",
+      label: "Madrid",
+      lat: 40.4168,
+      lng: -3.7038,
+    };
+
+    await act(async () => {
+      root.render(<Globe3D marker={marker} onSelectCoordinates={vi.fn()} />);
+    });
+
+    expect(runtime.methods.pointOfView).toHaveBeenLastCalledWith(
+      { altitude: 1.6, lat: 40.4168, lng: -3.7038 },
+      2400,
+    );
+  });
+
   it("elimina animaciones y escapa el tooltip con movimiento reducido", async () => {
     reducedMotion = true;
     const marker: GlobeMarker = {

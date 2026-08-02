@@ -33,6 +33,7 @@ export function AiSummaryCard({
     ? backendRecommendations
     : friendlyTips;
   const recommendation = adviceOptions[adviceIndex % adviceOptions.length];
+  const visibleAdviceNumber = (adviceIndex % adviceOptions.length) + 1;
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -216,7 +217,11 @@ export function AiSummaryCard({
               ))}
             </ul>
             <p className="ai-guide-recommendation" id="ai-current-advice">
-              <strong>Recomendación</strong>
+              <strong>
+                {hasBackendSummary
+                  ? `Consejo de Gemini ${visibleAdviceNumber}/${adviceOptions.length}`
+                  : "Recomendación"}
+              </strong>
               <span aria-live="polite">{recommendation}</span>
             </p>
           </>
@@ -224,7 +229,7 @@ export function AiSummaryCard({
 
         <small className="ai-guide-source">
           {hasBackendSummary
-            ? "Resumen generado por el asistente del backend."
+            ? "Consejos generados por Gemini con el clima actual."
             : "Consejo alternativo basado en los datos meteorológicos visibles."}
         </small>
       </div>

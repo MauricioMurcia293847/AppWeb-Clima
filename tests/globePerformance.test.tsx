@@ -61,7 +61,7 @@ describe("carga progresiva del globo", () => {
     expect(container.textContent).toContain("Globo interactivo");
   });
 
-  it("mantiene la vista estatica cuando el usuario activa ahorro de datos", async () => {
+  it("mantiene el globo 3D aunque el navegador active ahorro de datos", async () => {
     Object.defineProperty(window.navigator, "connection", {
       configurable: true,
       value: { effectiveType: "4g", saveData: true },
@@ -74,7 +74,7 @@ describe("carga progresiva del globo", () => {
       await vi.advanceTimersByTimeAsync(2000);
     });
 
-    expect(container.textContent).toContain("Vista mundial estática");
-    expect(container.textContent).not.toContain("Globo interactivo");
+    expect(container.textContent).toContain("Globo interactivo");
+    expect(container.textContent).not.toContain("Vista mundial estática");
   });
 });
