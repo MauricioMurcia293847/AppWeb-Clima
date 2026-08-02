@@ -268,6 +268,22 @@ describe("server routes", () => {
           generationConfig: {
             maxOutputTokens: 512,
             responseMimeType: "application/json",
+            responseSchema: {
+              properties: {
+                recommendations: {
+                  maxItems: 3,
+                  minItems: 3,
+                  type: "ARRAY",
+                },
+                summary: {
+                  maxItems: 3,
+                  minItems: 1,
+                  type: "ARRAY",
+                },
+              },
+              required: ["summary", "recommendations"],
+              type: "OBJECT",
+            },
             thinkingConfig: { thinkingLevel: "minimal" },
           },
         });

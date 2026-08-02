@@ -89,6 +89,24 @@ async function callGemini(weather: WeatherDashboardData): Promise<WeatherSummary
         generationConfig: {
           maxOutputTokens: aiSummaryMaxTokens,
           responseMimeType: "application/json",
+          responseSchema: {
+            properties: {
+              recommendations: {
+                items: { type: "STRING" },
+                maxItems: 3,
+                minItems: 3,
+                type: "ARRAY",
+              },
+              summary: {
+                items: { type: "STRING" },
+                maxItems: 3,
+                minItems: 1,
+                type: "ARRAY",
+              },
+            },
+            required: ["summary", "recommendations"],
+            type: "OBJECT",
+          },
           thinkingConfig: {
             thinkingLevel: "minimal",
           },
