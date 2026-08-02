@@ -1,81 +1,72 @@
 import cors from "cors";
 import express from "express";
-import { getWeatherByCity, getWeatherByCoordinates } from "./weatherService";
+import helmet from "helmet";
+import { getRuntimeCapabilities } from "./config";
+import { guardGetRequest, sendHttpResult } from "./httpContracts";
+import { observeExpressRequest } from "./observability";
+import {
+  handleCurrentWeather,
+  handleWeatherSearch,
+  handleWeatherSummary,
+  type HttpQuery,
+} from "./weatherHttp";
 
 export function createApp() {
   const app = express();
 
-  // CORS permite que el frontend de Vite consuma este backend en desarrollo.
+  // Helmet protege el servidor local. Las funciones serverless aplican sus
+  // cabeceras equivalentes porque no pasan por esta instancia de Express.
+  app.use(helmet());
   app.use(
     cors({
       origin: ["http://127.0.0.1:5173", "http://localhost:5173"],
     }),
   );
-
   app.use(express.json());
+  app.use(observeExpressRequest);
 
-  // Ruta simple para comprobar que el servidor esta vivo.
   app.get("/api/health", (_request, response) => {
     response.json({
+      capabilities: getRuntimeCapabilities(),
       ok: true,
       service: "AppWeb Clima API",
     });
   });
-
-  // Ruta principal: recibe una ciudad y devuelve clima normalizado.
-  app.get("/api/weather/search", async (request, response) => {
-    const city = String(request.query.city ?? "").trim();
-
-    if (!city) {
-      response.status(400).json({
-        error: "El parametro city es requerido.",
-      });
-      return;
-    }
-
-    try {
-      const weather = await getWeatherByCity(city);
-      response.json(weather);
-    } catch (error) {
-      response.status(502).json({
-        error:
-          error instanceof Error
-            ? error.message
-            : "No pudimos consultar el clima en este momento.",
-      });
-    }
+  app.all("/api/health", (request, response) => {
+    guardGetRequest(request, response);
   });
 
-  // Ruta por coordenadas: permite usar la geolocalizacion del navegador.
+  app.get("/api/weather/search", async (request, response) => {
+    if (guardGetRequest(request, response, { rateLimit: true })) return;
+    sendHttpResult(
+      response,
+      await handleWeatherSearch(request.query as HttpQuery),
+    );
+  });
+  app.all("/api/weather/search", (request, response) => {
+    guardGetRequest(request, response);
+  });
+
   app.get("/api/weather/current", async (request, response) => {
-    const latitude = Number(request.query.lat);
-    const longitude = Number(request.query.lon);
+    if (guardGetRequest(request, response, { rateLimit: true })) return;
+    sendHttpResult(
+      response,
+      await handleCurrentWeather(request.query as HttpQuery),
+    );
+  });
+  app.all("/api/weather/current", (request, response) => {
+    guardGetRequest(request, response);
+  });
 
-    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-      response.status(400).json({
-        error: "Los parametros lat y lon son requeridos.",
-      });
-      return;
-    }
-
-    if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
-      response.status(400).json({
-        error: "Las coordenadas estan fuera de rango.",
-      });
-      return;
-    }
-
-    try {
-      const weather = await getWeatherByCoordinates(latitude, longitude);
-      response.json(weather);
-    } catch (error) {
-      response.status(502).json({
-        error:
-          error instanceof Error
-            ? error.message
-            : "No pudimos consultar el clima de tu ubicacion.",
-      });
-    }
+  app.get("/api/weather/summary", async (request, response) => {
+    if (guardGetRequest(request, response, { rateLimit: true })) return;
+    sendHttpResult(
+      response,
+      await handleWeatherSummary(request.query as HttpQuery),
+    );
+  });
+  app.all("/api/weather/summary", (request, response) => {
+    guardGetRequest(request, response);
   });
 
   return app;

@@ -1,0 +1,43 @@
+# Catalogo declarativo inspirado en AWT. Los identificadores enlazan cada
+# recorrido con su implementacion ejecutable en weather-dashboard.spec.ts.
+suite: AppWeb Clima
+viewports:
+  - chromium-desktop
+  - chromium-mobile
+journeys:
+  - id: E2E-01
+    name: Carga inicial responsiva
+    outcome: El dashboard y el globo permanecen visibles sin desbordamiento horizontal.
+  - id: E2E-02
+    name: Busqueda por ciudad
+    outcome: Una respuesta valida actualiza el clima, el estado y las ciudades recientes.
+  - id: E2E-03
+    name: Respaldo local
+    outcome: Una falla de red conserva informacion util y comunica el modo de respaldo.
+  - id: E2E-04
+    name: Busqueda por coordenadas
+    outcome: Las coordenadas actualizan la ubicacion sin recortar el explorador mundial.
+  - id: E2E-05
+    name: Geolocalizacion rechazada
+    outcome: La interfaz explica el problema y mantiene disponible la busqueda manual.
+  - id: E2E-06
+    name: Favoritos persistentes
+    outcome: La ciudad guardada permanece disponible despues de recargar la pagina.
+  - id: E2E-07
+    name: Informacion legal
+    outcome: Creditos, privacidad y uso meteorologico responsable se pueden consultar con teclado o puntero.
+  - id: E2E-08
+    name: Compatibilidad entre navegadores
+    outcome: El recorrido principal funciona en Chromium, Firefox y WebKit sin desbordamiento.
+  - id: VIS-01
+    name: Regresion visual
+    outcome: Hero, asistente y pie conservan su composicion aprobada en escritorio y movil.
+  - id: E2E-09
+    name: Movimiento reducido
+    outcome: La preferencia manual detiene animaciones y permanece activa despues de recargar.
+  - id: E2E-10
+    name: Errores HTTP preservados
+    outcome: Un 400 o 429 se comunica como error especifico y no se transforma en respaldo local.
+  - id: E2E-11
+    name: Borrado selectivo de datos locales
+    outcome: Favoritos, recientes y movimiento se eliminan con confirmacion sin tocar claves ajenas.

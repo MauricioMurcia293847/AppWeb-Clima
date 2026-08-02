@@ -3,25 +3,31 @@ import type {
   ConfidenceLevel,
   DailyForecast,
   HourlyForecast,
+  WeatherDashboardData,
 } from "../src/types/weather";
 import type {
   OpenMeteoForecastResponse,
   OpenMeteoGeocodingResponse,
   OpenMeteoGeocodingResult,
   OpenMeteoReverseGeocodingResponse,
-  WeatherApiResponse,
 } from "./types";
+import { cacheDurationMs } from "./config";
+import {
+  parseOpenMeteoForecast,
+  parseOpenMeteoGeocoding,
+  parseOpenMeteoReverseGeocoding,
+} from "./externalValidation";
+import { observeDependency } from "./observability";
 
 const geocodingBaseUrl = "https://geocoding-api.open-meteo.com/v1/search";
 const reverseGeocodingBaseUrl = "https://geocoding-api.open-meteo.com/v1/reverse";
 const forecastBaseUrl = "https://api.open-meteo.com/v1/forecast";
 const primaryForecastModel = "best_match";
 const secondaryForecastModel = "gfs_global";
-const cacheDurationMs = 10 * 60 * 1000;
 
 type CacheEntry = {
   expiresAt: number;
-  value: WeatherApiResponse;
+  value: WeatherDashboardData;
 };
 
 // Cache sencillo en memoria para reducir llamadas repetidas a Open-Meteo.
@@ -41,7 +47,7 @@ function describeWeatherCode(code: number) {
   if ([71, 73, 75, 77, 85, 86].includes(code)) return "Nieve";
   if ([95, 96, 99].includes(code)) return "Tormenta";
 
-  return "Condicion variable";
+  return "Condición variable";
 }
 
 function formatUpdatedAt(value: string) {
@@ -70,11 +76,11 @@ function getContinent(countryCode: string) {
 
   if (europe.includes(countryCode)) return "Europa";
   if (asia.includes(countryCode)) return "Asia";
-  if (oceania.includes(countryCode)) return "Oceania";
-  if (africa.includes(countryCode)) return "Africa";
-  if (southAmerica.includes(countryCode)) return "America";
+  if (oceania.includes(countryCode)) return "Oceanía";
+  if (africa.includes(countryCode)) return "África";
+  if (southAmerica.includes(countryCode)) return "América";
 
-  return "America";
+  return "América";
 }
 
 function markerForLocation(
@@ -86,7 +92,7 @@ function markerForLocation(
   return {
     city: location.name,
     continent: getContinent(countryCode),
-    condition: "Ubicacion buscada",
+    condition: "Ubicación buscada",
     latitude: location.latitude,
     longitude: location.longitude,
     temperature,
@@ -152,6 +158,9 @@ function roundDelta(value: number) {
   return Math.round(Math.abs(value) * 10) / 10;
 }
 
+// Solo se llama cuando SI hubo un segundo modelo que comparar. Si no lo hubo,
+// el llamador debe usar "no_disponible" directamente -- deltas en 0 no
+// significan "coinciden perfecto", significan "no hay con que comparar".
 function calculateConfidence(
   temperatureDelta: number,
   humidityDelta: number,
@@ -168,19 +177,47 @@ function calculateConfidence(
   return "baja";
 }
 
-async function fetchJson<T>(url: string): Promise<T> {
-  const response = await fetch(url);
+async function fetchJson<T>(
+  url: string,
+  parse: (value: unknown) => T,
+): Promise<T> {
+  const startedAt = Date.now();
+  let status: number | undefined;
 
-  if (!response.ok) {
-    throw new Error(`Open-Meteo respondio con estado ${response.status}.`);
+  try {
+    const response = await fetch(url);
+    status = response.status;
+
+    if (!response.ok) {
+      throw new Error(`Open-Meteo respondió con estado ${response.status}.`);
+    }
+
+    const payload: unknown = await response.json();
+    const parsed = parse(payload);
+    observeDependency(
+      "open_meteo",
+      url.includes("geocoding-api") ? "geocoding" : "forecast",
+      startedAt,
+      "success",
+      status,
+    );
+    return parsed;
+  } catch (error) {
+    observeDependency(
+      "open_meteo",
+      url.includes("geocoding-api") ? "geocoding" : "forecast",
+      startedAt,
+      "error",
+      status,
+    );
+    throw error;
   }
-
-  return response.json() as Promise<T>;
 }
 
 async function findLocation(city: string) {
   const geocoding = await fetchJson<OpenMeteoGeocodingResponse>(
     buildGeocodingUrl(city),
+    parseOpenMeteoGeocoding,
   );
 
   const location = geocoding.results?.[0];
@@ -195,6 +232,7 @@ async function findLocation(city: string) {
 async function findNearestLocation(latitude: number, longitude: number) {
   const geocoding = await fetchJson<OpenMeteoReverseGeocodingResponse>(
     buildReverseGeocodingUrl(latitude, longitude),
+    parseOpenMeteoReverseGeocoding,
   ).catch(() => undefined);
 
   const location = geocoding?.results?.[0];
@@ -207,12 +245,16 @@ async function findNearestLocation(latitude: number, longitude: number) {
     };
   }
 
+  // Antes esto asumia "es la ubicacion del usuario, en Mexico" porque solo lo
+  // llamaba el boton de geolocalizacion. Con M1, cualquier clic en el globo
+  // pasa por aqui tambien -- si alguien toca un punto sin ciudad cercana (ej.
+  // desierto, oceano), afirmar "Mi ubicacion" + pais MX es directamente falso.
   return {
-    country: "Ubicacion actual",
-    country_code: "MX",
+    country: "",
+    country_code: "",
     latitude,
     longitude,
-    name: "Mi ubicacion",
+    name: "Ubicación sin nombre",
     timezone: "auto",
   };
 }
@@ -251,7 +293,7 @@ function mapOpenMeteoToDashboard(
   location: OpenMeteoGeocodingResult,
   forecast: OpenMeteoForecastResponse,
   comparisonForecast?: OpenMeteoForecastResponse,
-): WeatherApiResponse {
+): WeatherDashboardData {
   const hourly: HourlyForecast[] = forecast.hourly.time.slice(0, 6).map(
     (time, index) => ({
       rainChance: forecast.hourly.precipitation_probability?.[index] ?? 0,
@@ -274,16 +316,22 @@ function mapOpenMeteoToDashboard(
   const apparentTemperature = Math.round(forecast.current.apparent_temperature);
   const selectedMarker = markerForLocation(location, temperature);
   const comparison = buildModelComparison(forecast, comparisonForecast);
+  // Bug de v1 (encontrado en 03-diseno.md): al faltar el segundo modelo, los
+  // deltas caian en 0 y calculateConfidence(0,0,0) devolvia "alta" -- el
+  // sistema afirmaba maxima confianza justo cuando no tenia con que comparar.
+  const confidence: ConfidenceLevel = comparisonForecast
+    ? calculateConfidence(
+        comparison.temperatureDelta,
+        comparison.humidityDelta,
+        comparison.windDelta,
+      )
+    : "no_disponible";
 
   return {
     apparentTemperature,
     comparison,
     condition: describeWeatherCode(forecast.current.weather_code),
-    confidence: calculateConfidence(
-      comparison.temperatureDelta,
-      comparison.humidityDelta,
-      comparison.windDelta,
-    ),
+    confidence,
     country: location.country,
     dataSource: "backend",
     daily,
@@ -299,7 +347,7 @@ function mapOpenMeteoToDashboard(
 }
 
 // Servicio principal del backend: consulta, compara, normaliza y cachea.
-export async function getWeatherByCity(city: string): Promise<WeatherApiResponse> {
+export async function getWeatherByCity(city: string): Promise<WeatherDashboardData> {
   const normalizedCity = normalizeCityName(city);
   const cachedWeather = weatherCache.get(normalizedCity);
 
@@ -309,9 +357,13 @@ export async function getWeatherByCity(city: string): Promise<WeatherApiResponse
 
   const location = await findLocation(city);
   const [forecast, comparisonForecast] = await Promise.all([
-    fetchJson<OpenMeteoForecastResponse>(buildForecastUrl(location)),
+    fetchJson<OpenMeteoForecastResponse>(
+      buildForecastUrl(location),
+      parseOpenMeteoForecast,
+    ),
     fetchJson<OpenMeteoForecastResponse>(
       buildForecastUrl(location, secondaryForecastModel),
+      parseOpenMeteoForecast,
     ).catch(() => undefined),
   ]);
   const weather = mapOpenMeteoToDashboard(location, forecast, comparisonForecast);
@@ -327,7 +379,7 @@ export async function getWeatherByCity(city: string): Promise<WeatherApiResponse
 export async function getWeatherByCoordinates(
   latitude: number,
   longitude: number,
-): Promise<WeatherApiResponse> {
+): Promise<WeatherDashboardData> {
   const cacheKey = `${latitude.toFixed(3)},${longitude.toFixed(3)}`;
   const cachedWeather = weatherCache.get(cacheKey);
 
@@ -337,9 +389,13 @@ export async function getWeatherByCoordinates(
 
   const location = await findNearestLocation(latitude, longitude);
   const [forecast, comparisonForecast] = await Promise.all([
-    fetchJson<OpenMeteoForecastResponse>(buildForecastUrl(location)),
+    fetchJson<OpenMeteoForecastResponse>(
+      buildForecastUrl(location),
+      parseOpenMeteoForecast,
+    ),
     fetchJson<OpenMeteoForecastResponse>(
       buildForecastUrl(location, secondaryForecastModel),
+      parseOpenMeteoForecast,
     ).catch(() => undefined),
   ]);
   const weather = mapOpenMeteoToDashboard(location, forecast, comparisonForecast);

@@ -1,5 +1,7 @@
-// Define el nivel de confianza que usaremos al comparar proveedores climaticos.
-export type ConfidenceLevel = "alta" | "media" | "baja";
+// Define el nivel de confianza al comparar dos modelos meteorologicos.
+// "no_disponible" es honesto: no hubo segundo modelo con que comparar, no es
+// lo mismo que "alta" (que significaria que los modelos coinciden).
+export type ConfidenceLevel = "alta" | "media" | "baja" | "no_disponible";
 
 // Representa una medicion individual dentro del pronostico por horas.
 export type HourlyForecast = {
@@ -16,7 +18,7 @@ export type DailyForecast = {
   condition: string;
 };
 
-// Representa una ciudad o region destacada dentro del mapa mundial.
+// Representa una ciudad o region destacada dentro del globo mundial.
 export type ClimateMarker = {
   city: string;
   continent: string;
@@ -29,9 +31,9 @@ export type ClimateMarker = {
 };
 
 // Indica si el dashboard viene del backend propio o del respaldo local.
-export type WeatherDataSource = "backend" | "mock" | "open-meteo";
+export type WeatherDataSource = "backend" | "mock";
 
-// Modelo central del dashboard. Luego se llenara desde el backend.
+// Modelo central normalizado que consumen todos los componentes del dashboard.
 export type WeatherDashboardData = {
   location: string;
   country: string;
@@ -54,4 +56,15 @@ export type WeatherDashboardData = {
   hourly: HourlyForecast[];
   daily: DailyForecast[];
   markers: ClimateMarker[];
+};
+
+// Resumen en lenguaje natural (M2). Endpoint separado del clima -- ver
+// ADR-002 en 02-arquitectura.md -- por eso no vive dentro de WeatherDashboardData.
+export type WeatherSummary = {
+  summaryLines: string[];
+  recommendation: string;
+  generatedAt: string;
+  // true cuando la IA no respondio a tiempo o fallo: el texto es un respaldo
+  // generico, no algo generado. El frontend lo muestra distinto (sin alarmar).
+  degraded: boolean;
 };

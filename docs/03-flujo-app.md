@@ -1,59 +1,29 @@
 # Flujo de la app
 
-## Flujo principal
+## Consulta principal
 
-1. El usuario abre la app.
-2. La app solicita permiso de ubicacion.
-3. Si el usuario acepta, se obtiene latitud y longitud.
-4. El backend consulta fuentes climaticas externas.
-5. La app muestra clima actual, pronostico y comparacion de precision.
-6. El usuario puede explorar el mapa o buscar otra ciudad.
+1. La aplicación abre con datos de ejemplo claramente identificados.
+2. El usuario busca una ciudad, ingresa coordenadas, permite geolocalización o
+   selecciona un punto en el globo.
+3. La API propia valida la entrada y consulta Open-Meteo.
+4. El dashboard actualiza clima, métricas, pronósticos, comparación y globo.
+5. El resumen IA se solicita en paralelo y nunca bloquea el clima.
+6. La ubicación puede guardarse como favorita y queda en recientes.
 
-## Flujo sin permiso de ubicacion
+## Degradación
 
-1. El usuario abre la app.
-2. La app solicita permiso de ubicacion.
-3. El usuario rechaza o el navegador no permite acceder.
-4. La app muestra busqueda manual por ciudad.
-5. El usuario busca una ubicacion.
-6. La app muestra el clima de la ubicacion seleccionada.
+- Una ciudad puede usar respaldo local ante red o error `5xx`.
+- Coordenadas arbitrarias no usan mock porque sería engañoso.
+- `400` y `429` conservan el dato anterior y muestran un mensaje específico.
+- Sin Anthropic, el robot ofrece una recomendación local identificada.
+- Sin WebGL, el globo se sustituye por una vista estática.
 
-## Pantallas MVP
+## Privacidad
 
-### Dashboard principal
+La geolocalización requiere una acción explícita. Desde el diálogo de Privacidad
+se pueden borrar favoritos, recientes y movimiento sin eliminar claves ajenas.
 
-- Clima actual.
-- Indicadores principales.
-- Comparacion entre fuentes.
-- Pronostico por horas.
-- Pronostico semanal.
+## Uso responsable
 
-### Busqueda
-
-- Campo de ciudad.
-- Resultados sugeridos.
-- Busquedas recientes.
-
-### Mapa mundial
-
-- Mapa interactivo.
-- Selector por continente.
-- Marcadores climaticos.
-- Resumen por region.
-
-### Detalle de ubicacion
-
-- Datos actuales.
-- Graficas.
-- Diferencias entre proveedores.
-- Fecha y hora de actualizacion.
-
-## Estados de interfaz
-
-- Cargando ubicacion.
-- Cargando clima.
-- Permiso denegado.
-- Ciudad no encontrada.
-- Error de proveedor externo.
-- Datos parcialmente disponibles.
-
+La información es orientativa. Para alertas o condiciones severas se remite a
+autoridades meteorológicas y de protección civil.

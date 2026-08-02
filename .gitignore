@@ -18,3 +18,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# Evidencias generadas por Playwright durante las pruebas E2E.
+playwright-report/
+test-results/
+blob-report/

@@ -1,26 +1,19 @@
 import type { Request, Response } from "express";
-import { getWeatherByCity } from "../../server/weatherService.js";
+import { guardGetRequest, sendHttpResult } from "../../server/httpContracts.js";
+import { withObservedRequest } from "../../server/observability.js";
+import { applySecurityHeaders } from "../../server/securityHeaders.js";
+import { handleWeatherSearch, type HttpQuery } from "../../server/weatherHttp.js";
 
-// Vercel ejecuta este archivo como funcion serverless para /api/weather/search.
+// Adaptador serverless fino: seguridad y transporte quedan aqui; validacion y
+// casos de uso se comparten con Express en server/weatherHttp.ts.
 export default async function handler(request: Request, response: Response) {
-  const city = String(request.query.city ?? "").trim();
+  await withObservedRequest(request, response, "/api/weather/search", async () => {
+    applySecurityHeaders(response);
+    if (guardGetRequest(request, response, { rateLimit: true })) return;
 
-  if (!city) {
-    response.status(400).json({
-      error: "El parametro city es requerido.",
-    });
-    return;
-  }
-
-  try {
-    const weather = await getWeatherByCity(city);
-    response.json(weather);
-  } catch (error) {
-    response.status(502).json({
-      error:
-        error instanceof Error
-          ? error.message
-          : "No pudimos consultar el clima en este momento.",
-    });
-  }
+    sendHttpResult(
+      response,
+      await handleWeatherSearch(request.query as HttpQuery),
+    );
+  });
 }

@@ -79,3 +79,8 @@ export function toggleFavoriteLocation(location: string) {
   writeList(favoriteLocationsKey, nextFavorites);
   return nextFavorites;
 }
+
+export function clearSavedLocations() {
+  window.localStorage.removeItem(recentLocationsKey);
+  window.localStorage.removeItem(favoriteLocationsKey);
+}

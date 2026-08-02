@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   addRecentLocation,
+  clearSavedLocations,
   getFavoriteLocations,
   getRecentLocations,
   toggleFavoriteLocation,
@@ -34,5 +35,19 @@ describe("locationStorage", () => {
     expect(toggleFavoriteLocation("Madrid")).toEqual(["Madrid"]);
     expect(getFavoriteLocations()).toEqual(["Madrid"]);
     expect(toggleFavoriteLocation("madrid")).toEqual([]);
+  });
+
+  it("borra solo favoritos y recientes", () => {
+    addRecentLocation("Madrid");
+    toggleFavoriteLocation("Tokio");
+    window.localStorage.setItem("otra-app:preferencia", "conservar");
+
+    clearSavedLocations();
+
+    expect(getRecentLocations()).toEqual([]);
+    expect(getFavoriteLocations()).toEqual([]);
+    expect(window.localStorage.getItem("otra-app:preferencia")).toBe(
+      "conservar",
+    );
   });
 });

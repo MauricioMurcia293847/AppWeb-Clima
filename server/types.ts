@@ -1,5 +1,3 @@
-import type { WeatherDashboardData } from "../src/types/weather";
-
 export type OpenMeteoGeocodingResult = {
   name: string;
   country: string;
@@ -39,5 +37,3 @@ export type OpenMeteoForecastResponse = {
     temperature_2m_min: number[];
   };
 };
-
-export type WeatherApiResponse = WeatherDashboardData;

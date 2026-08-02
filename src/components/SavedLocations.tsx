@@ -30,12 +30,13 @@ export function SavedLocations({
           onClick={() => onToggleFavorite(currentLocation)}
           type="button"
         >
+          <MiniIcon name="heart" />
           {isFavorite ? "Guardada" : "Guardar favorito"}
         </button>
       </div>
 
       <LocationGroup
-        emptyText="Aun no hay favoritos."
+        emptyText="Aún no hay favoritos."
         isLoading={isLoading}
         items={favorites}
         label="Favoritos"
@@ -68,26 +69,30 @@ function LocationGroup({
   label,
   onSelectLocation,
 }: LocationGroupProps) {
+  const headingId = `saved-locations-${label.toLowerCase()}`;
+
   return (
-    <div className="saved-location-group">
-      <span>{label}</span>
+    <section aria-labelledby={headingId} className="saved-location-group">
+      <h3 id={headingId}>{label}</h3>
 
       {items.length > 0 ? (
-        <div className="saved-location-list">
+        <ul className="saved-location-list">
           {items.map((location) => (
-            <button
-              disabled={isLoading}
-              key={location}
-              onClick={() => onSelectLocation(location)}
-              type="button"
-            >
-              {location}
-            </button>
+            <li key={location}>
+              <button
+                disabled={isLoading}
+                onClick={() => onSelectLocation(location)}
+                type="button"
+              >
+                {location}
+              </button>
+            </li>
           ))}
-        </div>
+        </ul>
       ) : (
         <small>{emptyText}</small>
       )}
-    </div>
+    </section>
   );
 }
+import { MiniIcon } from "./MiniIcon";

@@ -1,14 +1,14 @@
 import type { WeatherDashboardData } from "../types/weather";
 
 // Ciudad principal que se muestra cuando el usuario abre la aplicacion.
-export const defaultCity = "Ciudad Juarez";
+export const defaultCity = "Ciudad Juárez";
 
 // Base local de ciudades simuladas. Funciona como una API temporal mientras
 // construimos el frontend y despues se reemplazara por el backend real.
 export const weatherMockByCity: Record<string, WeatherDashboardData> = {
   "ciudad juarez": {
-    location: "Ciudad Juarez",
-    country: "Mexico",
+    location: "Ciudad Juárez",
+    country: "México",
     dataSource: "mock",
     updatedAt: "18 jun 2026, 11:30",
     condition: "Soleado con viento ligero",
@@ -20,7 +20,7 @@ export const weatherMockByCity: Record<string, WeatherDashboardData> = {
     confidence: "alta",
     comparison: {
       primaryProvider: "Open-Meteo",
-      secondaryProvider: "OpenWeather",
+      secondaryProvider: "Open-Meteo GFS",
       temperatureDelta: 0.8,
       humidityDelta: 3,
       windDelta: 2.1,
@@ -36,21 +36,21 @@ export const weatherMockByCity: Record<string, WeatherDashboardData> = {
     daily: [
       { day: "Hoy", min: 24, max: 37, condition: "Soleado" },
       { day: "Vie", min: 23, max: 36, condition: "Despejado" },
-      { day: "Sab", min: 22, max: 34, condition: "Nubes leves" },
+      { day: "Sáb", min: 22, max: 34, condition: "Nubes leves" },
       { day: "Dom", min: 21, max: 33, condition: "Viento" },
     ],
     markers: [
-      { city: "Nueva York", continent: "America", temperature: 27, condition: "Nublado", latitude: 40.71, longitude: -74.01 },
-      { city: "Sao Paulo", continent: "America", temperature: 19, condition: "Lluvia", latitude: -23.55, longitude: -46.63 },
+      { city: "Nueva York", continent: "América", temperature: 27, condition: "Nublado", latitude: 40.71, longitude: -74.01 },
+      { city: "São Paulo", continent: "América", temperature: 19, condition: "Lluvia", latitude: -23.55, longitude: -46.63 },
       { city: "Madrid", continent: "Europa", temperature: 31, condition: "Soleado", latitude: 40.42, longitude: -3.7 },
-      { city: "El Cairo", continent: "Africa", temperature: 38, condition: "Caluroso", latitude: 30.04, longitude: 31.24 },
-      { city: "Tokio", continent: "Asia", temperature: 26, condition: "Humedo", latitude: 35.68, longitude: 139.69 },
-      { city: "Sydney", continent: "Oceania", temperature: 15, condition: "Fresco", latitude: -33.87, longitude: 151.21 },
+      { city: "El Cairo", continent: "África", temperature: 38, condition: "Caluroso", latitude: 30.04, longitude: 31.24 },
+      { city: "Tokio", continent: "Asia", temperature: 26, condition: "Húmedo", latitude: 35.68, longitude: 139.69 },
+      { city: "Sydney", continent: "Oceanía", temperature: 15, condition: "Fresco", latitude: -33.87, longitude: 151.21 },
     ],
   },
   madrid: {
     location: "Madrid",
-    country: "Espana",
+    country: "España",
     dataSource: "mock",
     updatedAt: "18 jun 2026, 19:30",
     condition: "Cielo despejado",
@@ -62,7 +62,7 @@ export const weatherMockByCity: Record<string, WeatherDashboardData> = {
     confidence: "alta",
     comparison: {
       primaryProvider: "Open-Meteo",
-      secondaryProvider: "OpenWeather",
+      secondaryProvider: "Open-Meteo GFS",
       temperatureDelta: 0.5,
       humidityDelta: 2,
       windDelta: 1.4,
@@ -78,24 +78,24 @@ export const weatherMockByCity: Record<string, WeatherDashboardData> = {
     daily: [
       { day: "Hoy", min: 22, max: 32, condition: "Despejado" },
       { day: "Vie", min: 21, max: 33, condition: "Soleado" },
-      { day: "Sab", min: 20, max: 31, condition: "Nubes leves" },
+      { day: "Sáb", min: 20, max: 31, condition: "Nubes leves" },
       { day: "Dom", min: 19, max: 30, condition: "Templado" },
     ],
     markers: [
-      { city: "Ciudad Juarez", continent: "America", temperature: 34, condition: "Soleado", latitude: 31.74, longitude: -106.49 },
+      { city: "Ciudad Juárez", continent: "América", temperature: 34, condition: "Soleado", latitude: 31.74, longitude: -106.49 },
       { city: "Madrid", continent: "Europa", temperature: 31, condition: "Soleado", latitude: 40.42, longitude: -3.7 },
-      { city: "Roma", continent: "Europa", temperature: 29, condition: "Calido", latitude: 41.9, longitude: 12.5 },
-      { city: "Paris", continent: "Europa", temperature: 24, condition: "Nublado", latitude: 48.86, longitude: 2.35 },
-      { city: "El Cairo", continent: "Africa", temperature: 38, condition: "Caluroso", latitude: 30.04, longitude: 31.24 },
-      { city: "Tokio", continent: "Asia", temperature: 26, condition: "Humedo", latitude: 35.68, longitude: 139.69 },
+      { city: "Roma", continent: "Europa", temperature: 29, condition: "Cálido", latitude: 41.9, longitude: 12.5 },
+      { city: "París", continent: "Europa", temperature: 24, condition: "Nublado", latitude: 48.86, longitude: 2.35 },
+      { city: "El Cairo", continent: "África", temperature: 38, condition: "Caluroso", latitude: 30.04, longitude: 31.24 },
+      { city: "Tokio", continent: "Asia", temperature: 26, condition: "Húmedo", latitude: 35.68, longitude: 139.69 },
     ],
   },
   tokio: {
     location: "Tokio",
-    country: "Japon",
+    country: "Japón",
     dataSource: "mock",
     updatedAt: "19 jun 2026, 02:30",
-    condition: "Humedo con nubes dispersas",
+    condition: "Húmedo con nubes dispersas",
     temperature: 26,
     apparentTemperature: 29,
     humidity: 74,
@@ -104,7 +104,7 @@ export const weatherMockByCity: Record<string, WeatherDashboardData> = {
     confidence: "media",
     comparison: {
       primaryProvider: "Open-Meteo",
-      secondaryProvider: "OpenWeather",
+      secondaryProvider: "Open-Meteo GFS",
       temperatureDelta: 1.6,
       humidityDelta: 8,
       windDelta: 3.2,
@@ -118,18 +118,18 @@ export const weatherMockByCity: Record<string, WeatherDashboardData> = {
       { time: "08:00", temperature: 27, rainChance: 16 },
     ],
     daily: [
-      { day: "Hoy", min: 24, max: 29, condition: "Humedo" },
+      { day: "Hoy", min: 24, max: 29, condition: "Húmedo" },
       { day: "Vie", min: 23, max: 28, condition: "Lluvia leve" },
-      { day: "Sab", min: 22, max: 27, condition: "Nublado" },
+      { day: "Sáb", min: 22, max: 27, condition: "Nublado" },
       { day: "Dom", min: 23, max: 30, condition: "Soleado" },
     ],
     markers: [
-      { city: "Tokio", continent: "Asia", temperature: 26, condition: "Humedo", latitude: 35.68, longitude: 139.69 },
-      { city: "Seul", continent: "Asia", temperature: 25, condition: "Nublado", latitude: 37.57, longitude: 126.98 },
+      { city: "Tokio", continent: "Asia", temperature: 26, condition: "Húmedo", latitude: 35.68, longitude: 139.69 },
+      { city: "Seúl", continent: "Asia", temperature: 25, condition: "Nublado", latitude: 37.57, longitude: 126.98 },
       { city: "Bangkok", continent: "Asia", temperature: 33, condition: "Lluvia", latitude: 13.75, longitude: 100.5 },
-      { city: "Sydney", continent: "Oceania", temperature: 15, condition: "Fresco", latitude: -33.87, longitude: 151.21 },
+      { city: "Sydney", continent: "Oceanía", temperature: 15, condition: "Fresco", latitude: -33.87, longitude: 151.21 },
       { city: "Madrid", continent: "Europa", temperature: 31, condition: "Soleado", latitude: 40.42, longitude: -3.7 },
-      { city: "Nueva York", continent: "America", temperature: 27, condition: "Nublado", latitude: 40.71, longitude: -74.01 },
+      { city: "Nueva York", continent: "América", temperature: 27, condition: "Nublado", latitude: 40.71, longitude: -74.01 },
     ],
   },
 };

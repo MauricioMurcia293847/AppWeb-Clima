@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://app-web-clima-kappa.vercel.app/sitemap.xml
