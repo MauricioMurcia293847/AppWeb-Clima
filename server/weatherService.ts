@@ -4,20 +4,20 @@ import type {
   DailyForecast,
   HourlyForecast,
   WeatherDashboardData,
-} from "../src/types/weather";
+} from "../src/types/weather.js";
 import type {
   OpenMeteoForecastResponse,
   OpenMeteoGeocodingResponse,
   OpenMeteoGeocodingResult,
   OpenMeteoReverseGeocodingResponse,
-} from "./types";
-import { cacheDurationMs } from "./config";
+} from "./types.js";
+import { cacheDurationMs } from "./config.js";
 import {
   parseOpenMeteoForecast,
   parseOpenMeteoGeocoding,
   parseOpenMeteoReverseGeocoding,
-} from "./externalValidation";
-import { observeDependency } from "./observability";
+} from "./externalValidation.js";
+import { observeDependency } from "./observability.js";
 
 const geocodingBaseUrl = "https://geocoding-api.open-meteo.com/v1/search";
 const reverseGeocodingBaseUrl = "https://geocoding-api.open-meteo.com/v1/reverse";

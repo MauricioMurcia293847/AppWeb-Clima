@@ -1,16 +1,16 @@
-import type { WeatherDashboardData, WeatherSummary } from "../src/types/weather";
+import type { WeatherDashboardData, WeatherSummary } from "../src/types/weather.js";
 import {
   aiSummaryMaxTokens,
   aiSummaryModel,
   aiSummaryTimeoutMs,
   cacheDurationMs,
-} from "./config";
+} from "./config.js";
 import {
   parseAnthropicText,
   parseWeatherSummaryJson,
-} from "./externalValidation";
-import { observeDependency } from "./observability";
-import { getWeatherByCity, getWeatherByCoordinates } from "./weatherService";
+} from "./externalValidation.js";
+import { observeDependency } from "./observability.js";
+import { getWeatherByCity, getWeatherByCoordinates } from "./weatherService.js";
 
 const anthropicUrl = "https://api.anthropic.com/v1/messages";
 

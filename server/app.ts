@@ -1,15 +1,15 @@
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
-import { getRuntimeCapabilities } from "./config";
-import { guardGetRequest, sendHttpResult } from "./httpContracts";
-import { observeExpressRequest } from "./observability";
+import { getRuntimeCapabilities } from "./config.js";
+import { guardGetRequest, sendHttpResult } from "./httpContracts.js";
+import { observeExpressRequest } from "./observability.js";
 import {
   handleCurrentWeather,
   handleWeatherSearch,
   handleWeatherSummary,
   type HttpQuery,
-} from "./weatherHttp";
+} from "./weatherHttp.js";
 
 export function createApp() {
   const app = express();

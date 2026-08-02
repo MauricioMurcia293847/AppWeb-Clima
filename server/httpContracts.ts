@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import { applyWeatherCacheHeaders } from "./cacheHeaders";
-import { checkRateLimit, getClientIp, rateLimitMessage } from "./rateLimit";
+import { applyWeatherCacheHeaders } from "./cacheHeaders.js";
+import { checkRateLimit, getClientIp, rateLimitMessage } from "./rateLimit.js";
 
 export type ApiErrorCode =
   | "INVALID_CITY"

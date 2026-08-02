@@ -1,5 +1,5 @@
-import { createApp } from "./app";
-import { observeServerStarted } from "./observability";
+import { createApp } from "./app.js";
+import { observeServerStarted } from "./observability.js";
 
 const app = createApp();
 const port = Number(process.env.PORT ?? 3001);

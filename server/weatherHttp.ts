@@ -1,14 +1,14 @@
-import type { WeatherDashboardData, WeatherSummary } from "../src/types/weather";
+import type { WeatherDashboardData, WeatherSummary } from "../src/types/weather.js";
 import {
   getWeatherSummaryByCity,
   getWeatherSummaryByCoordinates,
-} from "./aiSummaryService";
+} from "./aiSummaryService.js";
 import {
   errorResult,
   successResult,
   type HttpResult,
-} from "./httpContracts";
-import { getWeatherByCity, getWeatherByCoordinates } from "./weatherService";
+} from "./httpContracts.js";
+import { getWeatherByCity, getWeatherByCoordinates } from "./weatherService.js";
 
 export type HttpQuery = Record<string, unknown>;
 
