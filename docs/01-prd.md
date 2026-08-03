@@ -18,7 +18,7 @@ opcional sin convertir la IA en dependencia crítica.
 - Visitantes que prefieren explorar ubicaciones visualmente.
 - Evaluadores técnicos del portafolio de Mauricio Murcia.
 
-## Alcance v2
+## Alcance v1.0.0
 
 - Clima actual, seis horas y cuatro días.
 - Búsqueda, coordenadas, geolocalización y globo.
@@ -42,3 +42,9 @@ opcional sin convertir la IA en dependencia crítica.
 - Los fallos externos degradan sin mentir sobre la fuente.
 - No hay secretos en el cliente o repositorio.
 - CI valida calidad, accesibilidad, rendimiento y PWA.
+
+## Estado de validación
+
+El alcance `v1.0.0` fue entregado y validado el 2 de agosto de 2026. La
+evidencia funcional y de producción se conserva en `05-qa.md` y
+`06-entrega.md`.

@@ -103,17 +103,20 @@ El color nunca es el unico indicador; cada estado incluye una etiqueta textual.
 - `900px`: transicion a composicion de dos columnas y pronostico apilado.
 - `1280px`: hero aprovecha la altura disponible con ancho maximo de `1200px`.
 
-## Handoff antes de QA
+## Handoff completado
 
-- P11: actualizar README y capturas con el diseno vigente.
-- P12: agregar borrado confirmado de favoritos, recientes y preferencia de movimiento.
-- P13: incorporar un aviso visible de uso meteorologico orientativo y consulta de autoridades para condiciones severas.
+- [x] P11: README y cuatro capturas actualizados con el diseno vigente.
+- [x] P12: borrado confirmado de favoritos, recientes y preferencia de movimiento.
+- [x] P13: aviso visible de uso meteorologico responsable.
+- [x] Globo 3D con modo compatible animado cuando WebGL no esta disponible.
 
-No se abre otro rediseno general para estos puntos; deben reutilizar tokens y
-componentes existentes.
+El sistema visual quedo congelado para `v1.0.0`. Los cambios futuros deben
+reutilizar estos tokens y componentes o documentar una nueva decision de diseno.
 
 ## Validacion
 
 Antes de publicar se ejecutan lint, pruebas, build, auditoria automatizada WCAG y
 capturas en movil, tablet y escritorio. El canvas 3D debe renderizar contenido
 no vacio y la pagina no debe producir desplazamiento horizontal involuntario.
+
+La validacion final esta documentada en `05-qa.md` y `06-entrega.md`.
