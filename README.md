@@ -4,14 +4,37 @@
 [![Demo](https://img.shields.io/badge/demo-Vercel-39c4d6)](https://app-web-clima-kappa.vercel.app/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-68e4a4.svg)](LICENSE)
 
+## Descripción
+
 Dashboard meteorológico visual, accesible y responsive. Permite consultar ciudades, coordenadas o la ubicación del dispositivo; explora el planeta con un globo 3D, compara dos modelos de Open-Meteo y ofrece recomendaciones mediante Gemini o una guía local degradable.
 
 **Demo:** [app-web-clima-kappa.vercel.app](https://app-web-clima-kappa.vercel.app/)
 
+## Contenido
+
+- [Características](#características)
+- [Capturas](#capturas)
+- [Flujo de usuario](#flujo-de-usuario)
+- [Arquitectura](#arquitectura)
+- [Stack técnico](#stack-técnico)
+- [Estructura de carpetas](#estructura-de-carpetas)
+- [Setup local](#setup-local)
+- [Variables de entorno](#variables-de-entorno)
+- [Modelo de base de datos](#modelo-de-base-de-datos)
+- [API](#api)
+- [Comandos](#comandos)
+- [Pruebas e integración continua](#pruebas-e-integración-continua)
+- [Despliegue en Vercel](#despliegue-en-vercel)
+- [Seguridad y privacidad](#seguridad-privacidad-y-observabilidad)
+- [Roadmap](#roadmap)
+- [Documentación](#documentación)
+- [Créditos](#créditos)
+- [Licencia](#licencia)
+
 ## Características
 
 - Clima actual y pronóstico por ciudad, coordenadas o geolocalización.
-- Globo 3D interactivo con fallback estático cuando WebGL no está disponible.
+- Globo 3D interactivo con modo compatible animado cuando WebGL no está disponible.
 - Comparación honesta entre Open-Meteo Best Match y Open-Meteo GFS.
 - Asistente meteorológico animado con Gemini opcional y respaldo determinista.
 - Estados diferenciados para datos en vivo, ejemplo, respaldo, rate limit y error.
@@ -36,7 +59,7 @@ Dashboard meteorológico visual, accesible y responsive. Permite consultar ciuda
   <img src="docs/screenshots/appweb-clima-mobile-assistant.png" alt="Comparación y asistente meteorológico de AppWeb Clima en móvil" width="31%">
 </p>
 
-Las capturas se generan desde la aplicación real con:
+Las cuatro capturas se generan desde la aplicación real y se mantienen reproducibles con:
 
 ```bash
 npm run docs:screenshots
@@ -285,7 +308,7 @@ AppWeb Clima ofrece información orientativa. Para alertas y condiciones severas
 
 ## Roadmap
 
-### Completado en v2
+### Completado en v1.0.0
 
 - [x] Dashboard oscuro responsive y accesible.
 - [x] Globo 3D con fallback.
@@ -302,7 +325,7 @@ AppWeb Clima ofrece información orientativa. Para alertas y condiciones severas
 - [ ] Capa día/noche real sobre el globo.
 - [ ] Alertas oficiales, solo mediante una fuente autorizada.
 
-No están planeados para v2: cuentas, base de datos, chat abierto, publicidad o sincronización entre dispositivos.
+No están planeados para `v1.0.0`: cuentas, base de datos, chat abierto, publicidad o sincronización entre dispositivos.
 
 ## Documentación
 
@@ -311,7 +334,10 @@ No están planeados para v2: cuentas, base de datos, chat abierto, publicidad o 
 - [Flujo de la app](docs/03-flujo-app.md)
 - [Diseño UI/UX](docs/04-brief-diseno.md)
 - [Backend y persistencia](docs/05-backend-mer-bd.md)
+- [Validación de QA](docs/05-qa.md)
 - [Plan de implementación](docs/06-plan-implementacion.md)
+- [Entrega y operación](docs/06-entrega.md)
+- [Historial de cambios](CHANGELOG.md)
 
 ## Créditos
 

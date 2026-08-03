@@ -1,7 +1,7 @@
 {
   "name": "appweb-clima",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "docs:screenshots": "node scripts/capture-readme-screenshots.mjs",

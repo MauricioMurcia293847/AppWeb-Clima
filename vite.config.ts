@@ -5,6 +5,10 @@ import { VitePWA } from "vite-plugin-pwa";
 // Configuracion principal de Vite para compilar React con TypeScript.
 export default defineConfig({
   build: {
+    // El globo se carga de forma diferida y tiene un presupuesto gzip propio
+    // en scripts/check-performance-budget.mjs. Este limite evita que Vite lo
+    // reporte como advertencia generica sin relajar el gate medible de CI.
+    chunkSizeWarningLimit: 2_000,
     rollupOptions: {
       output: {
         // Conserva Anime.js como recurso diferido identificable. La seccion
