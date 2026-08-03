@@ -46,7 +46,7 @@ Version de entrega: `v1.0.0`.
 | PWA | Manifiesto, service worker e iconos aprobados |
 | README | 11 apartados y 4 capturas verificados |
 | Secretos | `.env` y `.vercel` ignorados; ningun secreto detectado |
-| Produccion | Health check `200` y capacidad Gemini activa |
+| Produccion | Health `200`, CSP activa, service worker, busqueda y globo verificados |
 
 ## Revision pre-release
 
@@ -60,6 +60,12 @@ Nota de mantenimiento: `vite-plugin-pwa` incluye transitivamente `glob@11.1.0`,
 que imprime un aviso de deprecacion durante `npm ci`; `npm audit` no reporta una
 vulnerabilidad activa. Debe actualizarse cuando Workbox publique una cadena
 compatible, sin forzar manualmente una version interna.
+
+Durante el cierre, Gemini confirmo que la clave y `gemini-3.5-flash` son validos,
+pero alcanzo temporalmente la cuota gratuita (`429 RESOURCE_EXHAUSTED`). La API
+respondio con el contrato degradado esperado y la interfaz identifico el consejo
+local. Como la IA es opcional, esta condicion no bloquea clima, busqueda ni
+pronosticos; vuelve a intentar automaticamente en consultas posteriores.
 
 ## Operacion
 
