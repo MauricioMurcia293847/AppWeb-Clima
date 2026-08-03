@@ -163,6 +163,8 @@ export function Globe3D({
       aria-describedby="globe-accessibility-note"
       aria-label="Globo tridimensional con selección de ubicaciones"
       className="globe-shell"
+      data-globe-ready={String(isGlobeReady)}
+      data-reduce-motion={String(reduceMotion)}
       ref={containerRef}
       role="img"
     >
@@ -182,6 +184,13 @@ export function Globe3D({
           height={size.height}
           onGlobeClick={(coordinates) => onSelectCoordinates(coordinates)}
           onGlobeReady={handleGlobeReady}
+          onZoom={(position) => {
+            const node = containerRef.current;
+            if (!node) return;
+            node.dataset.cameraLat = position.lat.toFixed(3);
+            node.dataset.cameraLng = position.lng.toFixed(3);
+            node.dataset.cameraAltitude = position.altitude.toFixed(3);
+          }}
           pointAltitude={0.01}
           pointColor={() => "#5fd0ff"}
           pointLabel={(point) => escapeHtml((point as GlobeMarker).label)}

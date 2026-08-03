@@ -343,3 +343,58 @@ test("E2E-12 permite reactivar animaciones aunque el sistema las reduzca", async
     )
     .toBe("false");
 });
+
+test("E2E-13 conserva movimiento y recorrido cuando WebGL no esta disponible", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const originalGetContext = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function getContext(
+      contextId: string,
+      ...args: unknown[]
+    ) {
+      if (["webgl", "webgl2", "experimental-webgl"].includes(contextId)) {
+        return null;
+      }
+      return originalGetContext.call(this, contextId, ...args);
+    } as typeof HTMLCanvasElement.prototype.getContext;
+  });
+  await page.route("**/api/weather/search**", (route) =>
+    fulfillJson(route, coordinateWeather),
+  );
+  await mockSummary(page);
+  await page.goto("/");
+
+  const fallbackImage = page.locator(".globe-fallback-earth img");
+  await expect(page.locator(".hero-globe canvas")).toHaveCount(0);
+  await expect(page.getByText("Modo compatible animado")).toBeVisible();
+
+  const ambientStart = await fallbackImage.evaluate(
+    (element) => getComputedStyle(element).transform,
+  );
+  await page.waitForTimeout(700);
+  const ambientEnd = await fallbackImage.evaluate(
+    (element) => getComputedStyle(element).transform,
+  );
+  expect(ambientEnd).not.toBe(ambientStart);
+
+  await page.getByRole("searchbox", { name: "Nombre de la ciudad" }).fill("Ciudad de México");
+  await page.getByRole("button", { name: "Buscar", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Ciudad de México" }),
+  ).toBeVisible();
+
+  const readPosition = () =>
+    fallbackImage.evaluate((element) => getComputedStyle(element).objectPosition);
+  const focusStart = await readPosition();
+  await page.waitForTimeout(550);
+  const focusMiddle = await readPosition();
+  await page.waitForTimeout(1900);
+  const focusEnd = await readPosition();
+
+  expect(new Set([focusStart, focusMiddle, focusEnd]).size).toBe(3);
+  await expect(page.locator(".globe-fallback-marker")).toHaveAttribute(
+    "title",
+    "Ciudad de México",
+  );
+});

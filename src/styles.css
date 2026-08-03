@@ -442,8 +442,42 @@ p {
 .globe-fallback-earth img {
   height: 100%;
   object-fit: cover;
+  object-position: var(--fallback-focus-x, 50%) 50%;
   transform: scale(1.15);
+  transition: object-position 2.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.8s ease-out;
   width: 100%;
+}
+
+.globe-fallback-animated .globe-fallback-earth:not(.is-focused) img {
+  animation: fallback-world-drift 18s ease-in-out infinite alternate;
+}
+
+@keyframes fallback-world-drift {
+  from { transform: scale(1.15) translateX(-2.5%); }
+  to { transform: scale(1.15) translateX(2.5%); }
+}
+
+.globe-fallback-marker {
+  background: var(--coral);
+  border: 3px solid rgba(255, 255, 255, 0.88);
+  border-radius: 50%;
+  box-shadow: 0 0 0 8px rgba(255, 115, 95, 0.18), 0 0 22px rgba(255, 115, 95, 0.72);
+  height: 14px;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+}
+
+.globe-fallback-animated .globe-fallback-marker {
+  animation: fallback-marker-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes fallback-marker-pulse {
+  0%, 100% { box-shadow: 0 0 0 5px rgba(255, 115, 95, 0.14), 0 0 18px rgba(255, 115, 95, 0.55); }
+  50% { box-shadow: 0 0 0 11px rgba(255, 115, 95, 0.05), 0 0 28px rgba(255, 115, 95, 0.82); }
 }
 
 .globe-fallback-loading .globe-fallback-earth {

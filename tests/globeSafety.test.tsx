@@ -34,16 +34,43 @@ describe("protecciones del globo 3D", () => {
     vi.restoreAllMocks();
   });
 
-  it("muestra una vista estatica cuando WebGL no esta disponible", async () => {
+  it("mantiene un recorrido mundial animado cuando WebGL no esta disponible", async () => {
+    const marker = {
+      id: "madrid",
+      label: "Madrid",
+      lat: 40.4168,
+      lng: -3.7038,
+    };
+
     await act(async () => {
-      root.render(<GlobeExperience onSelectCoordinates={vi.fn()} />);
+      root.render(
+        <GlobeExperience marker={marker} onSelectCoordinates={vi.fn()} />,
+      );
     });
 
     expect(container.querySelector("canvas")).toBeNull();
-    expect(container.textContent).toContain("Vista mundial estática");
+    expect(container.textContent).toContain("Modo compatible animado");
+    expect(container.querySelector(".globe-fallback-animated")).not.toBeNull();
+    expect(container.querySelector(".globe-fallback-marker")?.getAttribute("title"))
+      .toBe("Madrid");
+    expect(
+      container.querySelector<HTMLElement>(".globe-fallback-earth")?.style
+        .getPropertyValue("--fallback-focus-x"),
+    ).toBe("48.97116666666667%");
     expect(container.querySelector("img")?.getAttribute("src")).toBe(
       "/globe/earth-dark.jpg",
     );
+  });
+
+  it("respeta movimiento reducido tambien en el modo compatible", async () => {
+    await act(async () => {
+      root.render(
+        <GlobeExperience onSelectCoordinates={vi.fn()} reduceMotion />,
+      );
+    });
+
+    expect(container.textContent).toContain("Movimiento reducido");
+    expect(container.querySelector(".globe-fallback-animated")).toBeNull();
   });
 
   it("contiene un error 3D sin desmontar la interfaz exterior", async () => {
@@ -61,6 +88,6 @@ describe("protecciones del globo 3D", () => {
     });
 
     expect(container.textContent).toContain("Dashboard disponible");
-    expect(container.textContent).toContain("Vista mundial estática");
+    expect(container.textContent).toContain("Modo compatible animado");
   });
 });

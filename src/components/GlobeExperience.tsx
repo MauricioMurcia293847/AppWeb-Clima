@@ -51,7 +51,15 @@ export function GlobeExperience(props: GlobeExperienceProps) {
     };
   }, [webGLSupported]);
 
-  if (!webGLSupported) return <GlobeFallback reason="unsupported" />;
+  if (!webGLSupported) {
+    return (
+      <GlobeFallback
+        marker={props.marker}
+        reason="unsupported"
+        reduceMotion={props.reduceMotion}
+      />
+    );
+  }
   if (!shouldLoad3D) return <GlobeFallback reason="loading" />;
 
   return (
